@@ -16,6 +16,11 @@ A discord bot for Py-Lambdas
 
 * [razzlestorm](https://github.com/razzlestorm)
 
+
+## Built With
+
+* [Discord.py](https://discordpy.readthedocs.io/en/stable/index.html)
+
 ## Contributing
 
 We welcome and encourage contributions from Pythonistas of all skill levels!
