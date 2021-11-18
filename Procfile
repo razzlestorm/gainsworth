@@ -1,1 +1,1 @@
-worker: python -m Gainsworth
+worker: python -m gainsworth
