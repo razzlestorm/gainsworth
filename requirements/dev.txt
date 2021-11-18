@@ -1,0 +1,8 @@
+-r base.txt
+
+bandit
+black
+flake8
+mypy
+pre-commit
+tox
