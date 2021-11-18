@@ -30,4 +30,4 @@ Small note: If editing the README, please conform to the
 
 ## License
 
-MIT © 2020 Py-Lambdas
+MIT © 2021
