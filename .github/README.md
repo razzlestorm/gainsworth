@@ -28,6 +28,14 @@ can get started and who you can ask for help.
 Small note: If editing the README, please conform to the
 [standard-readme](https://github.com/RichardLitt/standard-readme) specification.
 
+## Roadmap
+
+Current features that are planned for the bot:
+* User exercise tracking
+* Daily exercise reminders
+* ...
+
+
 ## License
 
 MIT © 2021
