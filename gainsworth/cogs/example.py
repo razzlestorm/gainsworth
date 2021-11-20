@@ -10,6 +10,7 @@ class Example(commands.Cog):
         """
         self.client = client
         self.logger = logging.getLogger(__name__)
+        self.logger.info('Example Cog instance created')
 
     @commands.Cog.listener()
     async def on_ready(self):

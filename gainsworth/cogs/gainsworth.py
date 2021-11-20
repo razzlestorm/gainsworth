@@ -12,6 +12,7 @@ class Gainsworth(commands.Cog):
         self.client = client
         self._last_member = None
         self.logger = logging.getLogger(__name__)
+        self.logger.info('Gainsworth Cog instance created')
 
     @commands.Cog.listener()
     async def on_ready(self):
