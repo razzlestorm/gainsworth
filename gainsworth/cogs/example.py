@@ -1,3 +1,5 @@
+import logging
+
 from discord.ext import commands
 
 
@@ -7,6 +9,7 @@ class Example(commands.Cog):
         The init function will always take a client, which represents the particular bot that is using the cog.
         """
         self.client = client
+        self.logger = logging.getLogger(__name__)
 
     @commands.Cog.listener()
     async def on_ready(self):
