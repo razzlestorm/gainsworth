@@ -16,6 +16,11 @@ A discord bot for Py-Lambdas
 
 * [razzlestorm](https://github.com/razzlestorm)
 
+
+## Built With
+
+* [Discord.py](https://discordpy.readthedocs.io/en/stable/index.html)
+
 ## Contributing
 
 We welcome and encourage contributions from Pythonistas of all skill levels!
@@ -27,6 +32,14 @@ can get started and who you can ask for help.
 
 Small note: If editing the README, please conform to the
 [standard-readme](https://github.com/RichardLitt/standard-readme) specification.
+
+## Roadmap
+
+Current features that are planned for the bot:
+* User exercise tracking
+* Daily exercise reminders
+* ...
+
 
 ## License
 
