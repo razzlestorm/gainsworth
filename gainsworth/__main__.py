@@ -23,7 +23,7 @@ logger.addHandler(console_handler)
 bot = commands.Bot(command_prefix=config("DISCORD_PREFIX"))
 
 # Register Cogs with bot
-for cog in (ROOT_DIR / "cogs").glob("*.py"):
+for cog in (ROOT_DIR / "cogs").glob("!(__init__)*.py"):
     print(f"Found cog: 'cog.{cog.name[:-3]}'")
     bot.load_extension(f"gainsworth.cogs.{cog.name[:-3]}")
 
