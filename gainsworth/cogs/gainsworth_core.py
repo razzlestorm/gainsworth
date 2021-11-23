@@ -3,7 +3,6 @@ import logging
 from discord.ext import commands
 
 
-
 class Gainsworth(commands.Cog):
     def __init__(self, client):
         """
@@ -27,6 +26,7 @@ class Gainsworth(commands.Cog):
     @commands.command()
     async def hello(self, ctx):
         """Says hello"""
+        print("message received")
         channel = ctx.channel
         channels = ["gym-class-heroes"]
         if ctx.author == self.client.user:
