@@ -21,6 +21,17 @@ logger.addHandler(console_handler)
 
 
 bot = commands.Bot(command_prefix=config("DISCORD_PREFIX"))
+
+
+@bot.event
+async def on_ready():
+    print("Gainsworth is activated!")
+
+@bot.command()
+async def ping(ctx):
+    await ctx.send("PONG")
+
+
 # Register Cogs with bot
 init = ROOT_DIR/"cogs"/"__init__.py"
 cogs = [cog for cog in (ROOT_DIR / "cogs").glob("*.py") if cog != init]
