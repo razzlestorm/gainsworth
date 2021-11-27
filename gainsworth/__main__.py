@@ -27,6 +27,7 @@ bot = commands.Bot(command_prefix=config("DISCORD_PREFIX"))
 async def on_ready():
     print("Gainsworth is activated!")
 
+
 @bot.command()
 async def ping(ctx):
     await ctx.send("PONG")
