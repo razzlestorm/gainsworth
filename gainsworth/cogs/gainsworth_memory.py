@@ -12,10 +12,12 @@ from gainsworth.db.models import Base, Exercise, ResultType, User
 engine = create_engine(config("DATABASE_URL"))
 Session = sessionmaker(bind=engine)
 
+
 class GainsMemory(commands.Cog):
     def __init__(self, client):
         """
-        The init function will always take a client, which represents the particular bot that is using the cog.
+        The init function will always take a client, which represents
+         the particular bot that is using the cog.
         """
         self.client = client
         self._last_member = None
@@ -30,10 +32,10 @@ class GainsMemory(commands.Cog):
         taking actions based on those events.
         """
         print("Gainsworth will now remember your gains!")
-    
+
     # allow user to register a new User based on the ctx.author.id
     @commands.command()
-    async def register_user(self, ctx):
+    async def register(self, ctx):
         """
         This commands registers your username with Gainsworth, so the bot will
         remember you. Once you've registered, you can try the !create_exercise
@@ -61,22 +63,23 @@ class GainsMemory(commands.Cog):
                             type !help create_exercise to learn \
                             more!'.format(ctx.author))
 
-    
-"""
-# allow user to add exercises to their User db entry (ask to define name, result type, reps=0, latest_date = today())
-@commands.command()
-async def create_exercise(self, ctx):
-    pass
-# allow user to increment exercises based on how many they did, update latest_date
-@commands.command()
-async def count(self, ctx):
-    pass
-# first, allow user to print all their total exercises:
-@commands.command()
-async def totals(self, ctx):
-    pass
-# eventually allow user to query their exercises and filter by exercises if they want
-"""
+    # allow user to add exercises to their User db entry
+    # (ask to define name, result type, reps=0, latest_date = today())
+    @commands.command()
+    async def create_exercise(self, ctx):
+        pass
+
+    # allow user to increment exercises based on how many they did, update latest_date
+    @commands.command()
+    async def count(self, ctx):
+        pass
+
+    # first, allow user to print all their total exercises:
+    @commands.command()
+    async def totals(self, ctx):
+        pass
+    # eventually allow user to query their exercises and filter by exercises if they want
+
 
 def setup(client):
     """

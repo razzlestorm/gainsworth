@@ -1,12 +1,12 @@
 import enum
 
-from decouple import config
-from sqlalchemy import (Column, create_engine, Date, Enum, ForeignKey, 
+from sqlalchemy import (Column, Date, Enum, ForeignKey,
                         Integer, String)
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
 Base = declarative_base()
+
 
 class User(Base):
     __tablename__ = 'users'
@@ -34,9 +34,5 @@ class Exercise(Base):
     user_id = Column(Integer, ForeignKey('users.id'))
 
     def __repr__(self):
-        return (f"<Exercise(name='{self.name}', reps='{self.reps}'," 
+        return (f"<Exercise(name='{self.name}', reps='{self.reps}',"
                 f"result='{self.result}', latest_date='{self.latest_date}')>")
-
-
-
-
