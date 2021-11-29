@@ -38,6 +38,7 @@ Small note: If editing the README, please conform to the
 Current features that are planned for the bot:
 * User exercise tracking
 * Daily exercise reminders
+* Weekly graphs
 * ...
 
 

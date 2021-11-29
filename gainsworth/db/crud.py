@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from models import Base, Exercise, ResultType, User
+from models import Base, Exercise, User
 
 from decouple import config
 from sqlalchemy import create_engine
@@ -20,8 +20,7 @@ if __name__ == "__main__":
     ses = Session()
     name = User(name="Razzlestorm", date_created=datetime.today())
     exercise = Exercise(name="push-ups",
-                        result=ResultType.quantity,
-                        reps=1,
+                        reps=0,
                         latest_date=datetime.today())
     ses.add(name)
     ses.add(exercise)
@@ -29,6 +28,6 @@ if __name__ == "__main__":
     print("checking if connection creates user: ")
     print(ses.query(User).first().name, ses.query(User).first().date_created)
     print("checking if connection creates exercise: ")
-    print(ses.query(Exercise).first().name, ses.query(Exercise).first().result.value)
+    print(ses.query(Exercise).first().name, ses.query(Exercise).first().reps)
     ses.close_all()
     recreate_database()

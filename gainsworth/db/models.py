@@ -1,6 +1,4 @@
-import enum
-
-from sqlalchemy import (Column, Date, Enum, ForeignKey,
+from sqlalchemy import (Column, Date, ForeignKey,
                         Integer, String)
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
@@ -16,23 +14,18 @@ class User(Base):
     date_created = Column(Date)
 
     def __repr__(self):
-        return f"<User(name='{self.name}', date_created='{self.date_created}')>"
-
-
-class ResultType(enum.Enum):
-    time = 'time'
-    quantity = 'quantity'
+        return (f"<User(name='{self.name}', date_created='{self.date_created}')>\n"
+                f"Exercises: {self.exercises}")
 
 
 class Exercise(Base):
     __tablename__ = 'exercises'
-    id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
+    name = Column(String, primary_key=True, nullable=False)
+    unit = Column(String)
     reps = Column(Integer)
-    result = Column(Enum(ResultType))
     latest_date = Column(Date)
     user_id = Column(Integer, ForeignKey('users.id'))
 
     def __repr__(self):
-        return (f"<Exercise(name='{self.name}', reps='{self.reps}',"
-                f"result='{self.result}', latest_date='{self.latest_date}')>")
+        return (f"<Exercise(name='{self.name}', "
+                f"unit='{self.unit}', latest_date='{self.latest_date}')>")
