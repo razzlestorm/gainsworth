@@ -84,12 +84,12 @@ class GainsMemory(commands.Cog):
                 ses.add(name)
                 ses.commit()
                 ses.close()
-                await ctx.send(f'{ctx.author.name}, you are now registered with Gainsworth,'
-                            ' and can use !create_exercise. Type !help'
-                            ' create_exercise to learn more.')
+                await ctx.send(f'{ctx.author.name}, you are now registered with'
+                               ' Gainsworth, and can use !create_exercise. Type !help'
+                               ' create_exercise to learn more.')
             else:
-                await ctx.send(f'{ctx.author.name}, you are already registered, type !help'
-                            ' create_exercise to learn more!')
+                await ctx.send(f'{ctx.author.name}, you are already registered, type'
+                               ' !help create_exercise to learn more!')
 
     # allow user to add exercises to their User db entry
     # (ask to define name, result type, reps=0, latest_date = today())
@@ -101,7 +101,7 @@ class GainsMemory(commands.Cog):
         added. Please specify the name and unit of measure for your exercise. Leave
         the unit of measure blank for quantity-based exercises. An example command
         might look like this: \n
-        !create_exercise pushups\n\n        Or:\n\n        !create_exercise plank seconds
+        !create_exercise pushups\n\n        Or:\n\n      !create_exercise plank seconds
         """
         ses, user = await self._check_registered(ctx)
         if user:
@@ -124,7 +124,7 @@ class GainsMemory(commands.Cog):
         """
         This command lists the exercises that Gainsworth is remembering for you.
         """
-        ses, user = await self._check_registered(ctx) 
+        ses, user = await self._check_registered(ctx)
         if user:
             exercises = [e.name for e in user.exercises]
             if len(exercises) < 1:
@@ -134,7 +134,7 @@ class GainsMemory(commands.Cog):
             else:
                 formatted_exercises = "\n".join(exercises)
                 await ctx.send(f"{ctx.author.name}, here is a list of your exercises!\n"
-                            f"{formatted_exercises}")
+                               f"{formatted_exercises}")
         else:
             return
 
