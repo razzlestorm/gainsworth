@@ -39,6 +39,7 @@ Current features that are planned for the bot:
 * User exercise tracking
 * Daily exercise reminders
 * Weekly graphs
+* Randomize encouragement strings
 * ...
 
 

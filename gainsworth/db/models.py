@@ -1,5 +1,4 @@
-from sqlalchemy import (Column, Date, ForeignKey,
-                        Integer, String)
+from sqlalchemy import Column, Date, ForeignKey, Float, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
@@ -22,10 +21,10 @@ class Exercise(Base):
     __tablename__ = 'exercises'
     name = Column(String, primary_key=True, nullable=False)
     unit = Column(String)
-    reps = Column(Integer)
+    reps = Column(Float)
     latest_date = Column(Date)
     user_id = Column(Integer, ForeignKey('users.id'))
 
     def __repr__(self):
-        return (f"<Exercise(name='{self.name}', "
-                f"unit='{self.unit}', latest_date='{self.latest_date}')>")
+        return (f"<Exercise(name='{self.name}', unit='{self.unit}',"
+                f"reps='{self.reps}', latest_date='{self.latest_date}')>")

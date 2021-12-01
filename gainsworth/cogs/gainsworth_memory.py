@@ -101,7 +101,7 @@ class GainsMemory(commands.Cog):
         added. Please specify the name and unit of measure for your exercise. Leave
         the unit of measure blank for quantity-based exercises. An example command
         might look like this: \n
-        !create_exercise pushups\n\n        Or:\n\n      !create_exercise plank seconds
+        !create_exercise pushups\n\n        Or:\n\n      !create_exercise planks seconds
         """
         ses, user = await self._check_registered(ctx)
         if user:
@@ -117,6 +117,7 @@ class GainsMemory(commands.Cog):
                            " can now keep track of your daily gains with the"
                            f" !add_gains command. Example: !add_gains 10 {name}.")
         else:
+            ses.close()
             return
 
     @commands.command()
@@ -128,14 +129,17 @@ class GainsMemory(commands.Cog):
         if user:
             exercises = [e.name for e in user.exercises]
             if len(exercises) < 1:
+                ses.close()
                 await ctx.send(f"{ctx.author.name}, it looks like you haven't created"
                                " any exercises! Type !help create_exercise to get"
                                " started!")
             else:
                 formatted_exercises = "\n".join(exercises)
+                ses.close()
                 await ctx.send(f"{ctx.author.name}, here is a list of your exercises!\n"
                                f"{formatted_exercises}")
         else:
+            ses.close()
             return
 
     @commands.command()
@@ -145,7 +149,26 @@ class GainsMemory(commands.Cog):
     # allow user to increment exercises based on how many they did, update latest_date
     @commands.command()
     async def add_gains(self, ctx, amount, exercise):
-        pass
+        ses, user = await self._check_registered(ctx)
+        if user:
+            gains_target = ses.query(Exercise).filter(Exercise.user_id == user.id).filter(Exercise.name == exercise).first()
+            gains_target.reps += float(amount)
+            unit = gains_target.unit
+            # Some string formatting handling
+            unit_handler = ""
+            if not exercise.endswith("s"):
+                exercise = exercise + "s"
+            if unit:
+                unit = " " + str(unit)
+                unit_handler = "of "
+            elif not unit:
+                unit = ""
+            await ctx.send(f"{ctx.author.name}, I've recorded your {amount}{unit}"
+                               f" {unit_handler}{exercise}. Awesome job! Try typing"
+                               " !list_gains to see the totals of your exercises!")
+        else:
+            ses.close()
+            return
 
     # first, allow user to print all their total exercises:
     @commands.command()
