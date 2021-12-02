@@ -36,15 +36,25 @@ class GainsMemory(commands.Cog):
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
+        breakpoint()
         ignored = (commands.CommandNotFound, commands.CommandInvokeError)
         if isinstance(error, commands.errors.MissingRequiredArgument):
             await ctx.send(f'{ctx.author.name}, there was an issue with that command,'
                            ' type !help example_command to learn more about how'
                            ' to format a command')
+        # It's probably better to handle these errors in their respective methods
+        elif "'NoneType' object has no attribute 'reps'" in str(error):
+            await ctx.send(f"I didn't find that exercise, {ctx.author.name}!"
+                " Type !list_exercises to see all the exercises I'm currently"
+                ' tracking.')          
         elif "duplicate key" in str(error):
             await ctx.send(f'That exercise already exists for you, {ctx.author.name}!'
                            ' Type !list_exercises to see all the exercises you have'
                            ' already added.')
+        elif "UnmappedInstanceError" in str(error):
+            await ctx.send(f"I didn't find that exercise, {ctx.author.name}!"
+                " Type !list_exercises to see all the exercises I'm currently"
+                ' tracking.')
         elif isinstance(error, ignored):
             return
         else:
@@ -63,7 +73,6 @@ class GainsMemory(commands.Cog):
         else:
             return ses, registered_user
 
-    # allow user to register a new User based on the ctx.author.id
     @commands.command()
     async def register(self, ctx):
         """
@@ -92,8 +101,6 @@ class GainsMemory(commands.Cog):
                 await ctx.send(f'{ctx.author.name}, you are already registered, type'
                                ' !help create_exercise to learn more!')
 
-    # allow user to add exercises to their User db entry
-    # (ask to define name, result type, reps=0, latest_date = today())
     @commands.command()
     async def create_exercise(self, ctx, name, unit=None):
         """
@@ -145,8 +152,21 @@ class GainsMemory(commands.Cog):
             return
 
     @commands.command()
-    async def remove_exercise(self, ctx):
-        pass
+    async def remove_exercise(self, ctx, exercise):
+        ses, user = await self._check_registered(ctx)
+        if user:
+            remove_target = ses.query(Exercise).filter(Exercise.user_id == user.id).filter(Exercise.name == exercise).first()
+            ses.delete(remove_target)
+            ses.commit()
+            ses.close()
+            await ctx.send(f"{ctx.author.name}, your exercise of {exercise} was"
+                               " deleted. You can type !list_exercises to see which"
+                               " exercises I'm keeping track of, or !help"
+                               " create_exercise to see how you start tracking a"
+                               " new one!")
+        else:
+            ses.close()
+            return
 
     # allow user to increment exercises based on how many they did, update latest_date
     @commands.command()

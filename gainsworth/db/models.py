@@ -26,5 +26,5 @@ class Exercise(Base):
     user_id = Column(Integer, ForeignKey('users.id'))
 
     def __repr__(self):
-        return (f"<Exercise(name='{self.name}', unit='{self.unit}',"
+        return (f"<Exercise(name='{self.name}', unit='{self.unit}', "
                 f"reps='{self.reps}', latest_date='{self.latest_date}')>")
