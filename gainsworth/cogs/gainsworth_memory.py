@@ -168,13 +168,17 @@ class GainsMemory(commands.Cog):
             ses.close()
             return
 
-    # allow user to increment exercises based on how many they did, update latest_date
+    # TODO: Revamp how exercises get saved, should be a new exercise for every row
+    # we can check that an exercise of the same name exists, to verify the user keeps
+    # track of the same exercise, then create a new exercise with the date and attach
+    # to the user.
     @commands.command()
     async def add_gains(self, ctx, amount, exercise):
         ses, user = await self._check_registered(ctx)
         if user:
             gains_target = ses.query(Exercise).filter(Exercise.user_id == user.id).filter(Exercise.name == exercise).first()
             gains_target.reps += Decimal(amount)
+            gains_target.latest_date = datetime.today()
             unit = gains_target.unit
             ses.commit()
             ses.close()
@@ -194,7 +198,9 @@ class GainsMemory(commands.Cog):
             ses.close()
             return
 
-    # first, allow user to print all their total exercises:
+    # in revamped version, will need to sum up the reps of the exercises as grouped by
+    # their names. Having multiple dates allows us to do things like calculate gains
+    # over the week, etc.
     @commands.command()
     async def list_gains(self, ctx):
         ses, user = await self._check_registered(ctx)
