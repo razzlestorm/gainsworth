@@ -1,4 +1,5 @@
 from datetime import datetime
+from decimal import Decimal
 import logging
 
 from decouple import config
@@ -36,9 +37,7 @@ class GainsMemory(commands.Cog):
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
         ignored = (commands.CommandNotFound, commands.CommandInvokeError)
-        if isinstance(error, ignored):
-            return
-        elif isinstance(error, commands.errors.MissingRequiredArgument):
+        if isinstance(error, commands.errors.MissingRequiredArgument):
             await ctx.send(f'{ctx.author.name}, there was an issue with that command,'
                            ' type !help example_command to learn more about how'
                            ' to format a command')
@@ -46,6 +45,8 @@ class GainsMemory(commands.Cog):
             await ctx.send(f'That exercise already exists for you, {ctx.author.name}!'
                            ' Type !list_exercises to see all the exercises you have'
                            ' already added.')
+        elif isinstance(error, ignored):
+            return
         else:
             await ctx.send(f'{ctx.author.name}, something went wrong with your input.')
 
@@ -97,11 +98,12 @@ class GainsMemory(commands.Cog):
     async def create_exercise(self, ctx, name, unit=None):
         """
         Use this command to create a custom exercise that you can then !add_gains to.
-        Gainsworth will remember your gains on the various exercises that you have \
+        Gainsworth will remember your gains on the various exercises that you have
         added. Please specify the name and unit of measure for your exercise. Leave
-        the unit of measure blank for quantity-based exercises. An example command
-        might look like this: \n
-        !create_exercise pushups\n\n        Or:\n\n      !create_exercise planks seconds
+        the unit of measure blank for quantity-based exercises. Your exercise name
+        should be just one word. An example command might look like this: \n
+        !create_exercise Pushups\n\n        Or:\n\n      !create_exercise Planks seconds
+        \n\n    Or:\n\n    !create_exercise JumpingJacks
         """
         ses, user = await self._check_registered(ctx)
         if user:
@@ -152,8 +154,10 @@ class GainsMemory(commands.Cog):
         ses, user = await self._check_registered(ctx)
         if user:
             gains_target = ses.query(Exercise).filter(Exercise.user_id == user.id).filter(Exercise.name == exercise).first()
-            gains_target.reps += float(amount)
+            gains_target.reps += Decimal(amount)
             unit = gains_target.unit
+            ses.commit()
+            ses.close()
             # Some string formatting handling
             unit_handler = ""
             if not exercise.endswith("s"):
@@ -164,7 +168,7 @@ class GainsMemory(commands.Cog):
             elif not unit:
                 unit = ""
             await ctx.send(f"{ctx.author.name}, I've recorded your {amount}{unit}"
-                               f" {unit_handler}{exercise}. Awesome job! Try typing"
+                               f" {unit_handler}{exercise}. Awesome work! Try typing"
                                " !list_gains to see the totals of your exercises!")
         else:
             ses.close()
@@ -173,7 +177,33 @@ class GainsMemory(commands.Cog):
     # first, allow user to print all their total exercises:
     @commands.command()
     async def list_gains(self, ctx):
-        pass
+        ses, user = await self._check_registered(ctx)
+        if user:
+            exercise_objs = [e for e in user.exercises]
+            if len(exercise_objs) < 1:
+                ses.close()
+                await ctx.send(f"{ctx.author.name}, it looks like you haven't created"
+                               " any exercises! Type !help create_exercise to get"
+                               " started!")
+            else:
+                totals = []
+                for e in exercise_objs:
+                    name = e.name
+                    if not name.endswith("s"):
+                        name = name + "s"
+                    if e.unit:
+                        totals.append(f"{e.reps} {e.unit} of {name}")
+                    else:
+                        totals.append(f"{e.reps} {name}")
+                msg = "You've done a total of:\n"
+                msg += "\n".join(totals)
+                ses.close()
+                await ctx.send(f"{ctx.author.name}, here is a list of your totals!\n"
+                               f"{msg}")
+
+        else:
+            ses.close()
+            return
     # eventually allow user to query their exercises and filter by exercises if they want
 
 
