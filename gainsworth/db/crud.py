@@ -18,10 +18,10 @@ if __name__ == "__main__":
 
     recreate_database()
     ses = Session()
-    name = User(name="Razzlestorm", date_created=datetime.today())
+    name = User(name="Razzlestorm", date_created=datetime.utcnow())
     exercise = Exercise(name="push-ups",
                         reps=0,
-                        latest_date=datetime.today())
+                        date=datetime.utcnow())
     ses.add(name)
     ses.add(exercise)
     ses.commit()

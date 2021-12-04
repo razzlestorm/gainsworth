@@ -22,7 +22,7 @@ class Example(commands.Cog):
         """
         print("Example extension has been loaded")
 
-    @commands.command()
+    @commands.command(hidden=True)
     async def yoohoo(self, ctx):
         """
         This is a useless example command to demonstrate how commands can be added to
