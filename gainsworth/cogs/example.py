@@ -6,7 +6,8 @@ from discord.ext import commands
 class Example(commands.Cog):
     def __init__(self, client):
         """
-        The init function will always take a client, which represents the particular bot that is using the cog.
+        The init function will always take a client, which represents the
+         particular bot that is using the cog.
         """
         self.client = client
         self.logger = logging.getLogger(__name__)
@@ -21,7 +22,7 @@ class Example(commands.Cog):
         """
         print("Example extension has been loaded")
 
-    @commands.command()
+    @commands.command(hidden=True)
     async def yoohoo(self, ctx):
         """
         This is a useless example command to demonstrate how commands can be added to

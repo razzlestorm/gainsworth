@@ -3,11 +3,11 @@ import logging
 from discord.ext import commands
 
 
-
 class Gainsworth(commands.Cog):
     def __init__(self, client):
         """
-        The init function will always take a client, which represents the particular bot that is using the cog.
+        The init function will always take a client, which represents
+         the particular bot that is using the cog.
         """
         self.client = client
         self._last_member = None
@@ -17,16 +17,16 @@ class Gainsworth(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         """
-        Any listeners you add will be effectively merged with the global listeners,
-        which means you can have multiple cogs listening for the same events and
-        taking actions based on those events.
+        Any listeners you add will be effectively merged with the global
+         listeners, which means you can have multiple cogs listening for the
+        same events and taking actions based on those events.
         """
         print("Gainsworth is ready to PUMP YOU UP!")
-
 
     @commands.command()
     async def hello(self, ctx):
         """Says hello"""
+        print("message received")
         channel = ctx.channel
         channels = ["gym-class-heroes"]
         if ctx.author == self.client.user:
@@ -37,8 +37,10 @@ class Gainsworth(commands.Cog):
                 # {0.name} here comes from the MessageEmbed class's "fields" attr
                 await ctx.send('Hello {0.name}~'.format(member))
             else:
-                await ctx.send('Hello {0.name}... Are you getting your GAINS in?'.format(member))
+                await ctx.send('Hello {0.name}... Are you getting \
+                               your GAINS in?'.format(member))
             self._last_member = member
+
 
 def setup(client):
     """

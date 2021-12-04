@@ -36,8 +36,10 @@ Small note: If editing the README, please conform to the
 ## Roadmap
 
 Current features that are planned for the bot:
-* User exercise tracking
-* Daily exercise reminders
+* ~User exercise tracking~
+* Customizable exercise reminders
+* Weekly gains graphs
+* Randomize encouragement strings
 * ...
 
 

@@ -22,10 +22,22 @@ logger.addHandler(console_handler)
 
 bot = commands.Bot(command_prefix=config("DISCORD_PREFIX"))
 
+
+@bot.event
+async def on_ready():
+    print("Gainsworth is activated!")
+
+
+@bot.command()
+async def ping(ctx):
+    await ctx.send("PONG")
+
+
 # Register Cogs with bot
-for cog in (ROOT_DIR / "cogs").glob("!(__init__)*.py"):
+init = ROOT_DIR/"cogs"/"__init__.py"
+cogs = [cog for cog in (ROOT_DIR / "cogs").glob("*.py") if cog != init]
+for cog in cogs:
     print(f"Found cog: 'cog.{cog.name[:-3]}'")
     bot.load_extension(f"gainsworth.cogs.{cog.name[:-3]}")
-
 
 bot.run(config("DISCORD_BOT_KEY"))
