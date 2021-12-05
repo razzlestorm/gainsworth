@@ -1,5 +1,6 @@
 import logging
 from pathlib import Path
+import sys
 
 from decouple import config
 from discord.ext import commands
@@ -11,7 +12,7 @@ logger = logging.getLogger('gainsworth')
 logger.setLevel(logging.DEBUG)
 file_handler = logging.FileHandler('gainsworth_debug.log')
 file_handler.setLevel(logging.DEBUG)
-console_handler = logging.StreamHandler()
+console_handler = logging.StreamHandler(sys.stdout)
 console_handler.setLevel(logging.ERROR)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 file_handler.setFormatter(formatter)
