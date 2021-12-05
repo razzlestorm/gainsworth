@@ -1,6 +1,7 @@
 from datetime import datetime
 from decimal import Decimal
 import logging
+import sys
 
 from decouple import config
 from discord.ext import commands
@@ -36,7 +37,8 @@ class GainsMemory(commands.Cog):
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
-
+        sys.stdout.write("Command Error: ")
+        sys.stdout.write(error)
         ignored = (commands.CommandInvokeError)
         if isinstance(error, commands.CommandNotFound):
             await ctx.send(f'{ctx.author.name}, I did not understand that command.'
