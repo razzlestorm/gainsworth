@@ -37,14 +37,17 @@ class GainsMemory(commands.Cog):
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
         ignored = (commands.CommandInvokeError)
-        
         if isinstance(error, commands.CommandNotFound):
             await ctx.send(f'{ctx.author.name}, I did not understand that command.'
-                           'Try typing `!help` to see a list of available commands.')
+                           ' Try typing `!help` to see a list of available commands.')
         elif isinstance(error, commands.errors.MissingRequiredArgument):
             await ctx.send(f'{ctx.author.name}, there was an issue with that command,'
-                           ' type `!help example_command` to learn more about how'
-                           ' to format a command')
+                           f' type `!help {ctx.args[1].command.name}` to learn more'
+                           ' about how to format that command')
+        elif isinstance(error, commands.ArgumentParsingError):
+            await ctx.send(f'{ctx.author.name}, there was an issue with your arguments,'
+                           f' type `!help {ctx.args[1].command.name}` to learn more'
+                           ' about how to format that command')
         # It's probably better to handle these errors in their respective methods
         elif "'NoneType' object has no attribute 'reps'" in str(error):
             await ctx.send(f"I didn't find that exercise, {ctx.author.name}!"
@@ -70,41 +73,14 @@ class GainsMemory(commands.Cog):
         ses = Session()
         registered_user = ses.query(User).filter(User.name == user).first()
         if not registered_user:
-            ses.close()
-            await ctx.send(f"{ctx.author.name}, you haven't registered with"
-                           " Gainsworth yet, try using the `!register` command first.")
-        else:
-            return ses, registered_user
-
-    @commands.command()
-    async def register(self, ctx):
-        """
-        This commands registers your username with Gainsworth, so the bot will
-        remember you. Once you've registered, you can try the !create_exercise
-        command to attach an exercise to your username. Also try !list_exercises
-        to see the exercises that Gainsworth is currently remembering for you.
-        """
-        user = f"{ctx.author.name}#{ctx.author.discriminator}"
-        channel = ctx.channel
-        channels = ["gym-class-heroes"]
-        if ctx.author == self.client.user:
-            return
-        if channel.name in channels:
-            ses = Session()
+            name = User(name=user, date_created=datetime.utcnow())
+            ses.add(name)
+            ses.commit()
             registered_user = ses.query(User).filter(User.name == user).first()
-            if not registered_user:
-                name = User(name=user, date_created=datetime.utcnow())
-                ses.add(name)
-                ses.commit()
-                ses.close()
-                await ctx.send(f'{ctx.author.name}, you are now registered with'
-                               ' Gainsworth, and can use `!create_exercise`. Type'
-                               ' `!help create_exercise` to learn more.')
-            else:
-                await ctx.send(f'{ctx.author.name}, you are already registered, type'
-                               ' !help create_exercise to learn more!')
+        return ses, registered_user
 
-    @commands.command()
+
+    @commands.command(aliases=["ce", "create_e", "c_exercise"])
     async def create_exercise(self, ctx, name, unit=None):
         """
         Use this command to create a custom exercise that you can then !add_gains to.
@@ -112,8 +88,9 @@ class GainsMemory(commands.Cog):
         added. Please specify the name and unit of measure for your exercise. Leave
         the unit of measure blank for quantity-based exercises. Your exercise name
         should be just one word. An example command might look like this: \n
-        !create_exercise Pushups\n\n        Or:\n\n      !create_exercise Planks minutes
-        \n\n    Or:\n\n    !create_exercise JumpingJacks
+        !create_exercise Pushups\n\nOr:\n\n!create_exercise Planks minutes\n\n
+        Or:\n\n!create_exercise Jumping-Jacks\n\n
+        **Remember**: Capitalization matters!
         """
         ses, user = await self._check_registered(ctx)
         if user:
@@ -138,7 +115,7 @@ class GainsMemory(commands.Cog):
             ses.close()
             return
 
-    @commands.command()
+    @commands.command(aliases=["le", "list_e", "l_exercises"])
     async def list_exercises(self, ctx):
         """
         This command lists the exercises that Gainsworth is remembering for you.
@@ -167,7 +144,7 @@ class GainsMemory(commands.Cog):
             ses.close()
             return
 
-    @commands.command()
+    @commands.command(aliases=["re", "remove_e", "r_exercise"])
     async def remove_exercise(self, ctx, exercise):
         """
         Use this command to remove ALL exercises of a certain name that you've been 
@@ -192,17 +169,22 @@ class GainsMemory(commands.Cog):
             ses.close()
             return
 
-    @commands.command()
-    async def add_gains(self, ctx, amount, exercise):
+    @commands.command(aliases=["ag", "add_g", "a_gains"])
+    async def add_gains(self, ctx, *args):
         """
         Use this command to tell Gainsworth about an exercise that you did!
         Gainsworth will keep a record of your exercise, how much of that 
         exercise you did, and what day you did it on (in UTC time). This will let you
         keep track of how your gains improve over time!
         An example command might look like this: \n
-        !add_gains 10 Pushups\n\n        Or:\n\n      !add_gains 1.5 Planks\n\n
+        !add_gains 10 pushups\n\n        Or:\n\n      !add_gains 1.5 planks\n\n
         """
         ses, user = await self._check_registered(ctx)
+        # Implement better checking
+        if len(args) > 2:
+            raise commands.ArgumentParsingError()
+        amount = [arg for arg in args if arg.isdigit()][0]
+        exercise = [arg for arg in args if not arg.isdigit()][0]
         if user:
             exercises = [e.name for e in user.exercises]
             if exercise in exercises:
@@ -236,7 +218,7 @@ class GainsMemory(commands.Cog):
             ses.close()
             return
 
-    @commands.command()
+    @commands.command(aliases=["lg", "list_g", "l_gains"])
     async def list_gains(self, ctx):
         """
         Use this command to tell yourself and everyone else how awesome you are! 
@@ -255,18 +237,15 @@ class GainsMemory(commands.Cog):
                 totals = []
                 result = [x for x in ses.query(Exercise.name, Exercise.unit, func.sum(Exercise.reps)).filter(Exercise.user_id == user.id).group_by(Exercise.name, Exercise.unit).all()]
                 for name, unit, reps in result:
-                    e_name = name
-                    if not e_name.endswith("s"):
-                        e_name = e_name + "s"
                     if unit:
-                        totals.append(f"{reps} {unit} of {e_name}")
+                        totals.append(f"{reps} {unit} of {name}")
                     else:
-                        totals.append(f"{reps} {e_name}")
+                        totals.append(f"{reps} {name}")
                 msg = "You've done a total of:\n"
                 msg += "\n".join(totals)
                 ses.close()
                 await ctx.send(f"{ctx.author.name}, here is a list of your totals!\n"
-                               f"{msg}\n Keep up the **great gains** you're making!")
+                               f"{msg}\nKeep up the **great gains** you're making!")
 
         else:
             ses.close()
