@@ -160,7 +160,8 @@ class GainsMemory(commands.Cog):
         if user:
             remove_target = ses.query(Exercise).filter(Exercise.user_id == user.id).filter(Exercise.name == exercise).delete()
             self.logger.info(f"records deleted: {remove_target}")
-            total_removed = str(remove_target)
+            # minus the Exercise made by g!ce
+            total_removed = int(str(remove_target)) - 1
             ses.commit()
             ses.close()
             await ctx.send(f"{ctx.author.name}, your **{total_removed}** exercise"
