@@ -203,8 +203,6 @@ class GainsMemory(commands.Cog):
                 ses.close()
                 # Some string formatting handling
                 unit_handler = ""
-                if not exercise.endswith("s"):
-                    exercise = exercise + "s"
                 if unit:
                     unit = " " + str(unit)
                     unit_handler = "of "
