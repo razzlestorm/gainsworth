@@ -39,27 +39,27 @@ class GainsMemory(commands.Cog):
         ignored = (commands.CommandInvokeError)
         if isinstance(error, commands.CommandNotFound):
             await ctx.send(f'{ctx.author.name}, I did not understand that command.'
-                           ' Try typing `!help` to see a list of available commands.')
+                           ' Try typing `g!help` to see a list of available commands.')
         elif isinstance(error, commands.errors.MissingRequiredArgument):
             await ctx.send(f'{ctx.author.name}, there was an issue with that command,'
-                           f' type `!help {ctx.args[1].command.name}` to learn more'
+                           f' type `g!help {ctx.args[1].command.name}` to learn more'
                            ' about how to format that command')
         elif isinstance(error, commands.ArgumentParsingError):
             await ctx.send(f'{ctx.author.name}, there was an issue with your arguments,'
-                           f' type `!help {ctx.args[1].command.name}` to learn more'
+                           f' type `g!help {ctx.args[1].command.name}` to learn more'
                            ' about how to format that command')
         # It's probably better to handle these errors in their respective methods
         elif "'NoneType' object has no attribute 'reps'" in str(error):
             await ctx.send(f"I didn't find that exercise, {ctx.author.name}!"
-                " Type `!list_exercises` to see all the exercises I'm currently"
+                " Type `g!list_exercises` to see all the exercises I'm currently"
                 ' tracking.')          
         elif "duplicate key" in str(error):
             await ctx.send(f'That exercise already exists for you, {ctx.author.name}!'
-                           ' Type `!list_exercises` to see all the exercises you have'
+                           ' Type `g!list_exercises` to see all the exercises you have'
                            ' already added.')
         elif "UnmappedInstanceError" in str(error):
             await ctx.send(f"I didn't find that exercise, {ctx.author.name}!"
-                " Type `!list_exercises` to see all the exercises I'm currently"
+                " Type `g!list_exercises` to see all the exercises I'm currently"
                 ' tracking.')
         elif isinstance(error, ignored):
             return
@@ -96,7 +96,7 @@ class GainsMemory(commands.Cog):
         if user:
             if ses.query(Exercise).filter(Exercise.user_id == user.id).filter(Exercise.name == name).first():
                 await ctx.send(f'That exercise already exists for you, {ctx.author.name}!'
-                           ' Type `!list_exercises` to see all the exercises you have'
+                           ' Type `g!list_exercises` to see all the exercises you have'
                            ' already added.')
             else:
                 exercise = Exercise(name=name,
@@ -110,7 +110,7 @@ class GainsMemory(commands.Cog):
                 ses.close()
                 await ctx.send(f"{ctx.author.name}, your exercise has been created! You"
                             " can now keep track of your daily gains with the"
-                            f" `!add_gains` command. Example: !add_gains 10 {name}.")
+                            f" `g!add_gains` command. Example: g!add_gains 10 {name}.")
         else:
             ses.close()
             return
@@ -127,7 +127,7 @@ class GainsMemory(commands.Cog):
             if len(exercises) < 1:
                 ses.close()
                 await ctx.send(f"{ctx.author.name}, it looks like you haven't created"
-                               " any exercises! Type `!help create_exercise` to get"
+                               " any exercises! Type `!ghelp create_exercise` to get"
                                " started!")
             else:
                 formatted_exercises = []
@@ -209,10 +209,10 @@ class GainsMemory(commands.Cog):
                     unit = ""
                 await ctx.send(f"{ctx.author.name}, I've recorded your {amount}{unit}"
                                 f" {unit_handler}{exercise}. Awesome work! Try typing"
-                                " `!list_gains` to see the totals of your exercises!")
+                                " `g!list_gains` to see the totals of your exercises!")
             else:
                 await ctx.send(f"I didn't find that exercise, {ctx.author.name}!"
-                    " Type `!list_exercises` to see all the exercises I'm currently"
+                    " Type `g!list_exercises` to see all the exercises I'm currently"
                     ' tracking.')
         else:
             ses.close()
@@ -231,7 +231,7 @@ class GainsMemory(commands.Cog):
             if len(exercise_objs) < 1:
                 ses.close()
                 await ctx.send(f"{ctx.author.name}, it looks like you haven't created"
-                               " any exercises! Type `!help create_exercise` to get"
+                               " any exercises! Type `g!help create_exercise` to get"
                                " started!")
             else:
                 totals = []
