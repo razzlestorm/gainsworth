@@ -54,16 +54,16 @@ class GainsMemory(commands.Cog):
         # It's probably better to handle these errors in their respective methods
         elif "'NoneType' object has no attribute 'reps'" in str(error):
             await ctx.send(f"I didn't find that exercise, {ctx.author.name}!"
-                " Type `g!list_exercises` to see all the exercises I'm currently"
-                ' tracking.')          
+                           " Type `g!list_exercises` to see all the exercises I'm"
+                           " currently tracking.")
         elif "duplicate key" in str(error):
             await ctx.send(f'That exercise already exists for you, {ctx.author.name}!'
                            ' Type `g!list_exercises` to see all the exercises you have'
                            ' already added.')
         elif "UnmappedInstanceError" in str(error):
             await ctx.send(f"I didn't find that exercise, {ctx.author.name}!"
-                " Type `g!list_exercises` to see all the exercises I'm currently"
-                ' tracking.')
+                           " Type `g!list_exercises` to see all the exercises I'm"
+                           " currently tracking.")
         elif isinstance(error, ignored):
             return
         else:
@@ -82,7 +82,6 @@ class GainsMemory(commands.Cog):
             registered_user = ses.query(User).filter(User.name == user).first()
         return ses, registered_user
 
-
     @commands.command(aliases=["ce", "create_e", "c_exercise"])
     async def create_exercise(self, ctx, name, unit=None):
         """
@@ -98,9 +97,9 @@ class GainsMemory(commands.Cog):
         ses, user = await self._check_registered(ctx)
         if user:
             if ses.query(Exercise).filter(Exercise.user_id == user.id).filter(Exercise.name == name).first():
-                await ctx.send(f'That exercise already exists for you, {ctx.author.name}!'
-                           ' Type `g!list_exercises` to see all the exercises you have'
-                           ' already added.')
+                await ctx.send(f'That exercise already exists for you,'
+                               f' {ctx.author.name}! Type `g!list_exercises` to see all'
+                               ' the exercises you have already added.')
             else:
                 exercise = Exercise(name=name,
                                     reps=0,
@@ -112,8 +111,9 @@ class GainsMemory(commands.Cog):
                 ses.commit()
                 ses.close()
                 await ctx.send(f"{ctx.author.name}, your exercise has been created! You"
-                            " can now keep track of your daily gains with the"
-                            f" `g!add_gains` command. Example: g!add_gains 10 {name}.")
+                               " can now keep track of your daily gains with the"
+                               " `g!add_gains` command."
+                               f" Example: g!add_gains 10 {name}.")
         else:
             ses.close()
             return
@@ -150,7 +150,7 @@ class GainsMemory(commands.Cog):
     @commands.command(aliases=["re", "remove_e", "r_exercise"])
     async def remove_exercise(self, ctx, exercise):
         """
-        Use this command to remove ALL exercises of a certain name that you've been 
+        Use this command to remove ALL exercises of a certain name that you've been
         tracking from Gainsworth's memory banks. BEWARE! This will remove all gains
         associated with that exercise that you've recorded.
         An example command might look like this: \n
@@ -164,10 +164,10 @@ class GainsMemory(commands.Cog):
             ses.commit()
             ses.close()
             await ctx.send(f"{ctx.author.name}, your **{total_removed}** exercise"
-                               f" records of **{exercise}** were deleted. You can type"
-                               " `!list_exercises` to see which exercises I'm keeping"
-                               " track of, or `!help create_exercise` to see how you"
-                               " start tracking anew one!")
+                           f" records of **{exercise}** were deleted. You can type"
+                           " `!list_exercises` to see which exercises I'm keeping"
+                           " track of, or `!help create_exercise` to see how you"
+                           " start tracking anew one!")
         else:
             ses.close()
             return
@@ -176,7 +176,7 @@ class GainsMemory(commands.Cog):
     async def add_gains(self, ctx, *args):
         """
         Use this command to tell Gainsworth about an exercise that you did!
-        Gainsworth will keep a record of your exercise, how much of that 
+        Gainsworth will keep a record of your exercise, how much of that
         exercise you did, and what day you did it on (in UTC time). This will let you
         keep track of how your gains improve over time!
         An example command might look like this: \n
@@ -211,12 +211,12 @@ class GainsMemory(commands.Cog):
                 elif not unit:
                     unit = ""
                 await ctx.send(f"{ctx.author.name}, I've recorded your {amount}{unit}"
-                                f" {unit_handler}{exercise}. Awesome work! Try typing"
-                                " `g!list_gains` to see the totals of your exercises!")
+                               f" {unit_handler}{exercise}. Awesome work! Try typing"
+                               " `g!list_gains` to see the totals of your exercises!")
             else:
                 await ctx.send(f"I didn't find that exercise, {ctx.author.name}!"
-                    " Type `g!list_exercises` to see all the exercises I'm currently"
-                    ' tracking.')
+                               " Type `g!list_exercises` to see all the exercises I'm"
+                               " currently tracking.")
         else:
             ses.close()
             return
@@ -224,7 +224,7 @@ class GainsMemory(commands.Cog):
     @commands.command(aliases=["lg", "list_g", "l_gains"])
     async def list_gains(self, ctx):
         """
-        Use this command to tell yourself and everyone else how awesome you are! 
+        Use this command to tell yourself and everyone else how awesome you are!
         Gainsworth will list out all the gains that you have recorded with the
         !add_gains command.
         """
