@@ -20,6 +20,9 @@ console_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 logger.addHandler(console_handler)
 
+from gainsworth.db.crud import recreate_database
+recreate_database()
+
 
 bot = commands.Bot(command_prefix=config("DISCORD_PREFIX"))
 

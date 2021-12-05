@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from models import Base, Exercise, User
+from .models import Base, Exercise, User
 
 from decouple import config
 from sqlalchemy import create_engine
@@ -8,6 +8,7 @@ from sqlalchemy.orm import sessionmaker
 
 
 def recreate_database():
+    engine = create_engine(config("DATABASE_URL"))
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
 
