@@ -37,9 +37,11 @@ Small note: If editing the README, please conform to the
 
 Current features that are planned for the bot:
 * ~User exercise tracking~
+* ~Allow !add_gains command to input multiple gains~
 * Customizable exercise reminders
 * Weekly gains graphs
 * Randomize encouragement strings
+* Better admin DB interaction
 * ...
 
 
