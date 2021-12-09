@@ -200,7 +200,6 @@ class GainsMemory(commands.Cog):
         m_args = None
         if len(args) % 2:
                 raise commands.ArgumentParsingError()
-        breakpoint()
         arg_pairs = [(args[ii], args[ii+1]) for ii in range(0, len(args)-1, 2)]
         if user:
             exercises = [e.name for e in user.exercises]
