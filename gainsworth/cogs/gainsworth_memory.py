@@ -82,6 +82,18 @@ class GainsMemory(commands.Cog):
             registered_user = ses.query(User).filter(User.name == user).first()
         return ses, registered_user
 
+    async def _add_gain(self, ses, user, amt, exercise):
+        unit = ses.query(Exercise).filter(Exercise.user_id == user.id).filter(Exercise.name == exercise).first().unit
+        gain = Exercise(name=exercise,
+                        reps=Decimal(amt),
+                        unit=unit,
+                        date=datetime.utcnow(),
+                        user_id=user.id)
+        ses.add(gain)
+        self.logger.info(f"New gain added: {gain}")
+        ses.commit()
+        return ses, unit
+
     @commands.command(aliases=["ce", "create_e", "c_exercise"])
     async def create_exercise(self, ctx, name, unit=None):
         """
@@ -130,7 +142,7 @@ class GainsMemory(commands.Cog):
             if len(exercises) < 1:
                 ses.close()
                 await ctx.send(f"{ctx.author.name}, it looks like you haven't created"
-                               " any exercises! Type `!ghelp create_exercise` to get"
+                               " any exercises! Type `g!help create_exercise` to get"
                                " started!")
             else:
                 formatted_exercises = []
@@ -172,7 +184,7 @@ class GainsMemory(commands.Cog):
         else:
             ses.close()
             return
-
+        
     @commands.command(aliases=["ag", "add_g", "a_gains"])
     async def add_gains(self, ctx, *args):
         """
@@ -185,37 +197,36 @@ class GainsMemory(commands.Cog):
         """
         ses, user = await self._check_registered(ctx)
         # Implement better checking
-        if len(args) > 2:
-            raise commands.ArgumentParsingError()
-        amount = [arg for arg in args if arg.isdigit()][0]
-        exercise = [arg for arg in args if not arg.isdigit()][0]
+        m_args = None
+        if len(args) % 2:
+                raise commands.ArgumentParsingError()
+        breakpoint()
+        arg_pairs = [(args[ii], args[ii+1]) for ii in range(0, len(args)-1, 2)]
         if user:
             exercises = [e.name for e in user.exercises]
-            if exercise in exercises:
-                unit = ses.query(Exercise).filter(Exercise.user_id == user.id).filter(Exercise.name == exercise).first().unit
-                gain = Exercise(name=exercise,
-                                reps=Decimal(amount),
-                                unit=unit,
-                                date=datetime.utcnow(),
-                                user_id=user.id)
-                ses.add(gain)
-                self.logger.info(f"New gain added: {gain}")
-                ses.commit()
-                ses.close()
-                # Some string formatting handling
-                unit_handler = ""
-                if unit:
-                    unit = " " + str(unit)
-                    unit_handler = "of "
-                elif not unit:
-                    unit = ""
-                await ctx.send(f"{ctx.author.name}, I've recorded your {amount}{unit}"
-                               f" {unit_handler}{exercise}. Awesome work! Try typing"
-                               " `g!list_gains` to see the totals of your exercises!")
-            else:
-                await ctx.send(f"I didn't find that exercise, {ctx.author.name}!"
-                               " Type `g!list_exercises` to see all the exercises I'm"
-                               " currently tracking.")
+            msgs = []
+            for pair in arg_pairs:
+                amount = [p for p in pair if p.isdigit()][0]
+                exercise = [p.replace(",", "") for p in pair if not p.isdigit()][0]
+                if exercise in exercises:
+                    ses, unit = await self._add_gain(ses, user, amount, exercise)
+                    # Some string formatting handling
+                    unit_handler = ""
+                    if unit:
+                        unit = " " + str(unit)
+                        unit_handler = "of "
+                    elif not unit:
+                        unit = ""
+                    msgs.append(f"{amount}{unit} {unit_handler}{exercise}")
+                else:
+                    await ctx.send(f"I didn't find that exercise, {exercise}, in your"
+                                   f" list, {ctx.author.name}! Type `g!list_exercises`"
+                                   " to see all the exercises I'm currently tracking.")
+            msgs = "\n".join(msgs)
+            ses.close()
+            await ctx.send(f"{ctx.author.name}, I've recorded the following exercises:"
+                           f"\n {msgs}\n Awesome work! Try typing"
+                           " `g!list_gains` to see the totals of your exercises!")
         else:
             ses.close()
             return
