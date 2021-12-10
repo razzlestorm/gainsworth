@@ -2,7 +2,7 @@
 
 [![standard-readme compliant](https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
 
-A discord bot for Py-Lambdas
+A discord bot to help you reach your fitness goals!
 
 ## Table of Contents
 
