@@ -221,6 +221,8 @@ class GainsMemory(commands.Cog):
                     await ctx.send(f"I didn't find that exercise, {exercise}, in your"
                                    f" list, {ctx.author.name}! Type `g!list_exercises`"
                                    " to see all the exercises I'm currently tracking.")
+                    ses.close()
+                    return
             msgs = "\n".join(msgs)
             ses.close()
             await ctx.send(f"{ctx.author.name}, I've recorded the following exercises:"
