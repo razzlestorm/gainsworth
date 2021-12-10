@@ -180,7 +180,7 @@ class GainsMemory(commands.Cog):
                            f" records of **{exercise}** were deleted. You can type"
                            " `!list_exercises` to see which exercises I'm keeping"
                            " track of, or `!help create_exercise` to see how you"
-                           " start tracking anew one!")
+                           " start tracking a new one!")
         else:
             ses.close()
             return
@@ -224,7 +224,7 @@ class GainsMemory(commands.Cog):
             msgs = "\n".join(msgs)
             ses.close()
             await ctx.send(f"{ctx.author.name}, I've recorded the following exercises:"
-                           f"\n {msgs}\n Awesome work! Try typing"
+                           f"\n{msgs}\nAwesome work! Try typing"
                            " `g!list_gains` to see the totals of your exercises!")
         else:
             ses.close()
