@@ -41,6 +41,7 @@ Current features that are planned for the bot:
 * Customizable exercise reminders
 * Weekly gains graphs
 * Randomize encouragement strings
+* Setting of weekly/monthly goals
 * Better admin DB interaction
 * ...
 
