@@ -75,6 +75,7 @@ class GainsVision(commands.Cog):
             subset = exercises[exercises['date'] > (datetime.utcnow() - timedelta(days=TIMES.get(time, 7)))]
             ses.close()
             # plotting logic
+            # see templates: https://plotly.com/python/templates/#theming-and-templates
             fig = px.line(subset,
                           x="date",
                           y="reps",
