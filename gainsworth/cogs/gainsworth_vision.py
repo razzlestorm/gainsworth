@@ -53,13 +53,15 @@ class GainsVision(commands.Cog):
             await ctx.send(f'{ctx.author.name}, something went wrong with your input.')
 
     @commands.command(aliases=["sg", "see_g", "s_gains"])
-    async def see_gains(self, ctx, time="week"):
+    async def see_gains(self, ctx, time="week", plot_type="line"):
         """
         Use this command to create a visualization of all your gains for the past week,
-        month, or year! Just type g!see_gains {week/month/year}, and Gainsworth will
-        create a graph that you can download and share with friends!
+        month, or year! Just type g!see_gains {week/month/year} {line/histogram}, and 
+        Gainsworth will create a graph that you can download and share with friends!
         An example command might look like this: \n
-        g!see_gains month
+        g!see_gains month histogram \n
+        OR 
+        g!see_gains (defaults to weekly line graphs)
         """
         TIMES = {
             "week": 7,
@@ -76,17 +78,34 @@ class GainsVision(commands.Cog):
             ses.close()
             # plotting logic
             # see templates: https://plotly.com/python/templates/#theming-and-templates
-            fig = px.line(subset,
-                          x="date",
-                          y="reps",
-                          color="name",
-                          labels = {
-                              "date": "Date",
-                              "reps": "No. of Reps",
-                              "name": "Exercises:"
-                          },
-                          title="GAINS!",
-                          template="plotly_dark+xgridoff")
+            if plot_type != "line":
+                fig = px.histogram(subset,
+                            x="date",
+                            y="reps",
+                            color="name",
+                            labels = {
+                                "date": "Date",
+                                "reps": "No. of Reps",
+                                "name": "Exercises:"
+                            },
+                            title="GAINS!",
+                            template="plotly_dark+xgridoff",
+                            nbins=TIMES.get(time, 7),
+                            barmode="group"
+                            )
+            else:
+                fig = px.line(subset,
+                            x="date",
+                            y="reps",
+                            color="name",
+                            labels = {
+                                "date": "Date",
+                                "reps": "No. of Reps",
+                                "name": "Exercises:"
+                            },
+                            title="GAINS!",
+                            template="plotly_dark+xgridoff",
+                            )
             fig.write_image("exercises.png")
             with open("exercises.png", "rb") as f:
                 file = io.BytesIO(f.read())
