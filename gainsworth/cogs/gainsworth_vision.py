@@ -1,6 +1,9 @@
+from datetime import datetime, timedelta
 import logging
+import io
 import sys
 
+import discord
 from discord.ext import commands
 import pandas as pd
 import plotly.express as px
@@ -58,24 +61,36 @@ class GainsVision(commands.Cog):
         An example command might look like this: \n
         g!see_gains month
         """
+        TIMES = {
+            "week": 7,
+            "month": 30,
+            "year": 365
+        }
         memory = self.client.get_cog("GainsMemory")
         if memory is not None:
             ses, user = await memory._check_registered(ctx)
         if user:
-            # this successfully gets the df
+            # this gets the df and filters by time
             exercises = pd.read_sql(ses.query(Exercise).filter(Exercise.user_id == user.id).statement, ses.bind)
+            subset = exercises[exercises['date'] > (datetime.utcnow() - timedelta(days=TIMES.get(time, 7)))]
             ses.close()
-            breakpoint()
             # plotting logic
-            fig = px.line(exercises, x="date", y="reps", title="GAINS!")
-            # https://github.com/ChattyRS/RuneClock/blob/master/cogs/runescape.py
-            # create img file
-            # send img
-            # remember to close session
-
-        else:
-            ses.close()
-            return
+            fig = px.line(subset,
+                          x="date",
+                          y="reps",
+                          color="name",
+                          labels = {
+                              "date": "Date",
+                              "reps": "No. of Reps",
+                              "name": "Exercises:"
+                          },
+                          title="GAINS!",
+                          template="plotly_dark+xgridoff")
+            fig.write_image("exercises.png")
+            with open("exercises.png", "rb") as f:
+                file = io.BytesIO(f.read())
+            image = discord.File(file, filename="d_exercises.png")
+            await ctx.send(file=image)
 
 
 def setup(client):
