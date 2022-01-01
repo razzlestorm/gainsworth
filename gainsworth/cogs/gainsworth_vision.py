@@ -106,6 +106,7 @@ class GainsVision(commands.Cog):
                             title="GAINS!",
                             template="plotly_dark+xgridoff",
                             )
+                fig.update_traces(mode="markers+lines")
             fig.write_image("exercises.png")
             with open("exercises.png", "rb") as f:
                 file = io.BytesIO(f.read())
