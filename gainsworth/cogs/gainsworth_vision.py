@@ -78,7 +78,7 @@ class GainsVision(commands.Cog):
             ses.close()
             # plotting logic
             # see templates: https://plotly.com/python/templates/#theming-and-templates
-            if plot_type != "line":
+            if plot_type in ["hist", "histogram", "h", "his", "hgram"]:
                 fig = px.histogram(subset,
                             x="date",
                             y="reps",
