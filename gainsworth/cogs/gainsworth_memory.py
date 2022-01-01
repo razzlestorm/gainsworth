@@ -227,7 +227,7 @@ class GainsMemory(commands.Cog):
             ses.close()
             await ctx.send(f"{ctx.author.name}, I've recorded the following exercises:"
                            f"\n{msgs}\nAwesome work! Try typing"
-                           " `g!list_gains` to see the totals of your exercises!")
+                           " `g!list_gains` or `g!see_gains` to see the totals of your exercises!")
         else:
             ses.close()
             return
