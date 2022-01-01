@@ -102,8 +102,8 @@ class GainsMemory(commands.Cog):
         added. Please specify the name and unit of measure for your exercise. Leave
         the unit of measure blank for quantity-based exercises. Your exercise name
         should be just one word. An example command might look like this: \n
-        !create_exercise Pushups\n\nOr:\n\n!create_exercise Planks minutes\n\n
-        Or:\n\n!create_exercise Jumping-Jacks\n\n
+        g!create_exercise Pushups\n\nOr:\n\ng!create_exercise Planks minutes\n\n
+        Or:\n\ng!create_exercise Jumping-Jacks\n\n
         **Remember**: Capitalization matters!
         """
         ses, user = await self._check_registered(ctx)
@@ -166,7 +166,7 @@ class GainsMemory(commands.Cog):
         tracking from Gainsworth's memory banks. BEWARE! This will remove all gains
         associated with that exercise that you've recorded.
         An example command might look like this: \n
-        !remove_exercise Pushups\n\n
+        g!remove_exercise Pushups\n\n
         """
         ses, user = await self._check_registered(ctx)
         if user:
@@ -193,7 +193,7 @@ class GainsMemory(commands.Cog):
         exercise you did, and what day you did it on (in UTC time). This will let you
         keep track of how your gains improve over time!
         An example command might look like this: \n
-        !add_gains 10 pushups\n\n        Or:\n\n      !add_gains 1.5 planks\n\n
+        g!add_gains 10 pushups\n\n        Or:\n\n      !add_gains 1.5 planks\n\n
         """
         ses, user = await self._check_registered(ctx)
         # Implement better checking
@@ -237,7 +237,7 @@ class GainsMemory(commands.Cog):
         """
         Use this command to tell yourself and everyone else how awesome you are!
         Gainsworth will list out all the gains that you have recorded with the
-        !add_gains command.
+        g!add_gains command.
         """
         ses, user = await self._check_registered(ctx)
         if user:

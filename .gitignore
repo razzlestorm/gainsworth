@@ -2,6 +2,9 @@
 # Created by https://www.toptal.com/developers/gitignore/api/database,dotenv,linux,macos,python,venv,virtualenv,visualstudiocode,windows
 # Edit at https://www.toptal.com/developers/gitignore?templates=database,dotenv,linux,macos,python,venv,virtualenv,visualstudiocode,windows
 
+## Test Files ##
+exercises.png
+
 ### Database ###
 *.accdb
 *.db
