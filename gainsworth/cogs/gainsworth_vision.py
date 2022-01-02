@@ -80,7 +80,7 @@ class GainsVision(commands.Cog):
             subset = subset.set_index('date')
 
             # create empty df filled with all dates in range
-            end = datetime.utcnow().date()
+            end = datetime.utcnow()
             start = (end-timedelta(days=TIMES.get(time, 7)))
             dates = pd.date_range(start=start, end=end, freq='D')
             idx_ref = pd.DatetimeIndex(dates)
@@ -89,9 +89,11 @@ class GainsVision(commands.Cog):
 
             # This is necessary because if the color parameter sees a NaN it panics
             subset_exc['name'] = subset_exc['name'].fillna("")
+            subset_exc['reps'] = subset_exc['reps'].fillna(-100)
             # plotting logic
             # see templates: https://plotly.com/python/templates/#theming-and-templates
             if plot_type in ["hist", "histogram", "h", "his", "hgram"]:
+                get_max = subset_exc.groupby([pd.Grouper(freq='D'), "name"]).sum().reset_index(level="name")
                 fig = px.histogram(subset_exc,
                             x=subset_exc.index,
                             y="reps",
@@ -106,14 +108,19 @@ class GainsVision(commands.Cog):
                             nbins=TIMES.get(time, 7),
                             barmode="group"
                             )
+                fig.update_layout(yaxis={"range":[0, get_max["reps"].max()]})
             else:
+                # subset_exc = subset_exc.join(subset_exc.groupby("name", as_index=False).cumsum(), rsuffix="_cumsum")
+                subset_exc = subset_exc.groupby([pd.Grouper(freq='D'), "name"]).sum().reset_index(level="name")
+                subset_exc = subset_exc.drop(["id", "user_id"], axis=1)
                 fig = px.line(subset_exc,
                             x=subset_exc.index,
                             y="reps",
                             color="name",
                             labels = {
+                                "index": "Date",
                                 "date": "Date",
-                                "reps": "No. of Reps",
+                                "reps": "Daily No. of Cumulative Reps",
                                 "name": "Exercises:"
                             },
                             title="GAINS!",
