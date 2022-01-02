@@ -66,7 +66,13 @@ class GainsVision(commands.Cog):
         """
         TIMES = {
             "week": 7,
+            "weeks": 7,
             "month": 30,
+            "months": 30,
+            "quarter": 90,
+            "season": 90,
+            "3month": 90,
+            "3months": 90,
             "year": 365
         }
         memory = self.client.get_cog("GainsMemory")
