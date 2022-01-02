@@ -114,7 +114,8 @@ class GainsVision(commands.Cog):
                                    nbins=TIMES.get(time, 7),
                                    barmode="group"
                                    )
-                fig.update_layout(yaxis={"range": [0, get_max["reps"].max()]})
+                max_val = get_max["reps"].max()
+                fig.update_layout(yaxis={"range": [0, max_val + max_val/10]})
             else:
                 subset_exc = subset_exc.groupby([pd.Grouper(freq='D'), "name"]) \
                              .sum().reset_index(level="name")
@@ -133,7 +134,8 @@ class GainsVision(commands.Cog):
                               template="plotly_dark+xgridoff",
                               )
                 fig.update_traces(mode="markers+lines")
-                fig.update_layout(yaxis={"range": [0, subset_exc["reps"].max()]})
+                max_val = subset_exc["reps"].max()
+                fig.update_layout(yaxis={"range": [0, max_val + max_val/10]})
             fig.write_image("exercises.png")
             with open("exercises.png", "rb") as f:
                 file = io.BytesIO(f.read())
