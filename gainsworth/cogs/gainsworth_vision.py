@@ -57,8 +57,8 @@ class GainsVision(commands.Cog):
     async def see_gains(self, ctx, time="week", plot_type="line"):
         """
         Use this command to create a visualization of all your gains for the past week,
-        month, or year! Just type g!see_gains {week/month/year} {line/histogram}, and
-        Gainsworth will create a graph that you can download and share with friends!
+        month, or year! Just type g!see_gains {week/month/season/year} {line/histogram},
+        and Gainsworth will create a graph that you can download and share with friends!
         An example command might look like this: \n
         g!see_gains month histogram \n
         OR
@@ -83,7 +83,9 @@ class GainsVision(commands.Cog):
             exercises = pd.read_sql(ses.query(Exercise)
                                     .filter(Exercise.user_id == user.id)
                                     .statement, ses.bind)
-            subset = exercises[exercises['date'] > (datetime.utcnow() - timedelta(days=TIMES.get(time, 7)))]
+            subset = exercises[exercises['date'] > 
+                               (datetime.utcnow() - 
+                               timedelta(days=TIMES.get(time, 7)))]
             ses.close()
             subset = subset.set_index('date')
             # create empty df filled with all dates in range

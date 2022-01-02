@@ -39,9 +39,10 @@ Current features that are planned for the bot:
 * ~User exercise tracking~
 * ~Allow !add_gains command to input multiple gains~
 * Customizable exercise reminders
-* Weekly gains graphs
+* ~Weekly/Monthly/Quarterly/Yearly gains graphs~
 * Randomize encouragement strings
 * Setting of weekly/monthly goals
+* Customizable search (by specific exercises, date ranges, etc.)
 * Better admin DB interaction
 * ...
 
