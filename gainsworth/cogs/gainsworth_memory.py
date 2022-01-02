@@ -83,7 +83,8 @@ class GainsMemory(commands.Cog):
         return ses, registered_user
 
     async def _add_gain(self, ses, user, amt, exercise):
-        unit = ses.query(Exercise).filter(Exercise.user_id == user.id).filter(Exercise.name == exercise).first().unit
+        unit = ses.query(Exercise).filter(Exercise.user_id == user.id) \
+               .filter(Exercise.name == exercise).first().unit
         gain = Exercise(name=exercise,
                         reps=Decimal(amt),
                         unit=unit,
@@ -108,7 +109,8 @@ class GainsMemory(commands.Cog):
         """
         ses, user = await self._check_registered(ctx)
         if user:
-            if ses.query(Exercise).filter(Exercise.user_id == user.id).filter(Exercise.name == name).first():
+            if ses.query(Exercise).filter(Exercise.user_id == user.id) \
+               .filter(Exercise.name == name).first():
                 await ctx.send(f'That exercise already exists for you,'
                                f' {ctx.author.name}! Type `g!list_exercises` to see all'
                                ' the exercises you have already added.')
@@ -170,7 +172,8 @@ class GainsMemory(commands.Cog):
         """
         ses, user = await self._check_registered(ctx)
         if user:
-            remove_target = ses.query(Exercise).filter(Exercise.user_id == user.id).filter(Exercise.name == exercise).delete()
+            remove_target = ses.query(Exercise).filter(Exercise.user_id == user.id) \
+                            .filter(Exercise.name == exercise).delete()
             self.logger.info(f"records deleted: {remove_target}")
             # minus the Exercise made by g!ce
             total_removed = int(str(remove_target)) - 1
@@ -184,7 +187,7 @@ class GainsMemory(commands.Cog):
         else:
             ses.close()
             return
-        
+
     @commands.command(aliases=["ag", "add_g", "a_gains"])
     async def add_gains(self, ctx, *args):
         """
@@ -196,10 +199,8 @@ class GainsMemory(commands.Cog):
         g!add_gains 10 pushups\n\n        Or:\n\n      !add_gains 1.5 planks\n\n
         """
         ses, user = await self._check_registered(ctx)
-        # Implement better checking
-        m_args = None
         if len(args) % 2:
-                raise commands.ArgumentParsingError()
+            raise commands.ArgumentParsingError()
         arg_pairs = [(args[ii], args[ii+1]) for ii in range(0, len(args)-1, 2)]
         if user:
             exercises = [e.name for e in user.exercises]
@@ -227,7 +228,8 @@ class GainsMemory(commands.Cog):
             ses.close()
             await ctx.send(f"{ctx.author.name}, I've recorded the following exercises:"
                            f"\n{msgs}\nAwesome work! Try typing"
-                           " `g!list_gains` or `g!see_gains` to see the totals of your exercises!")
+                           " `g!list_gains` or `g!see_gains` to see the totals"
+                           " of your exercises!")
         else:
             ses.close()
             return
@@ -249,7 +251,11 @@ class GainsMemory(commands.Cog):
                                " started!")
             else:
                 totals = []
-                result = [x for x in ses.query(Exercise.name, Exercise.unit, func.sum(Exercise.reps)).filter(Exercise.user_id == user.id).group_by(Exercise.name, Exercise.unit).all()]
+                result = [x for x in ses.query(Exercise.name,
+                                               Exercise.unit,
+                                               func.sum(Exercise.reps))
+                          .filter(Exercise.user_id == user.id)
+                          .group_by(Exercise.name, Exercise.unit).all()]
                 for name, unit, reps in result:
                     if unit:
                         totals.append(f"{reps} {unit} of {name}")
@@ -264,7 +270,7 @@ class GainsMemory(commands.Cog):
         else:
             ses.close()
             return
-    # eventually allow user to query their exercises and filter by exercises if they want
+    # eventually allow user to query their exercises and filter by exercise if they want
 
 
 def setup(client):
