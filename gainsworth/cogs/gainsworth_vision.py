@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 import logging
 import io
 import sys
+from typing import List
 
 import discord
 from discord.ext import commands
@@ -79,7 +80,6 @@ class GainsVision(commands.Cog):
             subset = exercises[exercises['date'] > (datetime.utcnow() - timedelta(days=TIMES.get(time, 7)))]
             ses.close()
             subset = subset.set_index('date')
-
             # create empty df filled with all dates in range
             end = datetime.utcnow()
             start = (end-timedelta(days=TIMES.get(time, 7)))
@@ -91,10 +91,20 @@ class GainsVision(commands.Cog):
                                   how='outer',
                                   left_index=True,
                                   right_index=True)
+            # All of these columns are unneeded for graphing
+            subset_exc = subset_exc.drop(["id", "user_id", "unit"], axis=1)
 
-            # This is necessary because if the color parameter sees a NaN it panics
-            subset_exc['name'] = subset_exc['name'].fillna("")
-            subset_exc['reps'] = subset_exc['reps'].fillna(-100)
+            def add_populated_rows(names: List, df: pd.DataFrame) -> pd.DataFrame:
+                for row in df['name'].isna().index:
+                    ii = 0
+                    for name in names:
+                        ii += 1
+                        df.loc[row + timedelta(seconds=ii)] = [name, 0.0]
+                df = df.dropna(subset=['name'])
+                return df
+
+            exc_names = [n for n in subset_exc['name'].unique() if isinstance(n, str)]
+            subset_exc = add_populated_rows(exc_names, subset_exc)
             # plotting logic
             # see templates: https://plotly.com/python/templates/#theming-and-templates
             if plot_type in ["hist", "histogram", "h", "his", "hgram"]:
@@ -119,7 +129,6 @@ class GainsVision(commands.Cog):
             else:
                 subset_exc = subset_exc.groupby([pd.Grouper(freq='D'), "name"]) \
                              .sum().reset_index(level="name")
-                subset_exc = subset_exc.drop(["id", "user_id"], axis=1)
                 fig = px.line(subset_exc,
                               x=subset_exc.index,
                               y="reps",
