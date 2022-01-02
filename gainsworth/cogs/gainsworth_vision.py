@@ -5,6 +5,7 @@ import sys
 
 import discord
 from discord.ext import commands
+import numpy as np
 import pandas as pd
 import plotly.express as px
 
@@ -76,11 +77,23 @@ class GainsVision(commands.Cog):
             exercises = pd.read_sql(ses.query(Exercise).filter(Exercise.user_id == user.id).statement, ses.bind)
             subset = exercises[exercises['date'] > (datetime.utcnow() - timedelta(days=TIMES.get(time, 7)))]
             ses.close()
+            subset = subset.set_index('date')
+
+            # create empty df filled with all dates in range
+            end = datetime.utcnow().date()
+            start = (end-timedelta(days=TIMES.get(time, 7)))
+            dates = pd.date_range(start=start, end=end, freq='D')
+            idx_ref = pd.DatetimeIndex(dates)
+            idx_df = pd.DataFrame(index=idx_ref)
+            subset_exc = pd.merge(idx_df, subset, how='outer', left_index=True, right_index=True)
+
+            # This is necessary because if the color parameter sees a NaN it panics
+            subset_exc['name'] = subset_exc['name'].fillna("")
             # plotting logic
             # see templates: https://plotly.com/python/templates/#theming-and-templates
             if plot_type in ["hist", "histogram", "h", "his", "hgram"]:
-                fig = px.histogram(subset,
-                            x="date",
+                fig = px.histogram(subset_exc,
+                            x=subset_exc.index,
                             y="reps",
                             color="name",
                             labels = {
@@ -94,8 +107,8 @@ class GainsVision(commands.Cog):
                             barmode="group"
                             )
             else:
-                fig = px.line(subset,
-                            x="date",
+                fig = px.line(subset_exc,
+                            x=subset_exc.index,
                             y="reps",
                             color="name",
                             labels = {
@@ -107,6 +120,7 @@ class GainsVision(commands.Cog):
                             template="plotly_dark+xgridoff",
                             )
                 fig.update_traces(mode="markers+lines")
+                fig.update_layout(yaxis={"range":[0, subset_exc["reps"].max()]})
             fig.write_image("exercises.png")
             with open("exercises.png", "rb") as f:
                 file = io.BytesIO(f.read())
