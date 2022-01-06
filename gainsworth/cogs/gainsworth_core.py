@@ -1,5 +1,5 @@
 import logging
-
+import sys
 from discord.ext import commands
 
 
@@ -22,6 +22,40 @@ class Gainsworth(commands.Cog):
         same events and taking actions based on those events.
         """
         print("Gainsworth is ready to PUMP YOU UP!")
+
+    @commands.Cog.listener()
+    async def on_command_error(self, ctx, error):
+        sys.stdout.write("Command Error: ")
+        sys.stdout.write(f"{error}")
+        ignored = (commands.CommandInvokeError)
+        if isinstance(error, commands.CommandNotFound):
+            await ctx.send(f'{ctx.author.name}, I did not understand that command.'
+                           ' Try typing `g!help` to see a list of available commands.')
+        elif isinstance(error, commands.errors.MissingRequiredArgument):
+            await ctx.send(f'{ctx.author.name}, there was an issue with that command,'
+                           f' type `g!help {ctx.args[1].command.name}` to learn more'
+                           ' about how to format that command')
+        elif isinstance(error, commands.ArgumentParsingError):
+            await ctx.send(f'{ctx.author.name}, there was an issue with your arguments,'
+                           f' type `g!help {ctx.args[1].command.name}` to learn more'
+                           ' about how to format that command')
+        # It's probably better to handle these errors in their respective methods
+        elif "'NoneType' object has no attribute 'reps'" in str(error):
+            await ctx.send(f"I didn't find that exercise, {ctx.author.name}!"
+                           " Type `g!list_exercises` to see all the exercises I'm"
+                           " currently tracking.")
+        elif "duplicate key" in str(error):
+            await ctx.send(f'That exercise already exists for you, {ctx.author.name}!'
+                           ' Type `g!list_exercises` to see all the exercises you have'
+                           ' already added.')
+        elif "UnmappedInstanceError" in str(error):
+            await ctx.send(f"I didn't find that exercise, {ctx.author.name}!"
+                           " Type `g!list_exercises` to see all the exercises I'm"
+                           " currently tracking.")
+        elif isinstance(error, ignored):
+            return
+        else:
+            await ctx.send(f'{ctx.author.name}, something went wrong with your input.')
 
     @commands.command()
     async def hello(self, ctx):

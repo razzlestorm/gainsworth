@@ -31,27 +31,6 @@ class GainsVision(commands.Cog):
         """
         print("Gainsworth is ready to visualize your gains!")
 
-    @commands.Cog.listener()
-    async def on_command_error(self, ctx, error):
-        sys.stdout.write("Command Error: ")
-        sys.stdout.write(f"{error}")
-        ignored = (commands.CommandInvokeError)
-        if isinstance(error, commands.CommandNotFound):
-            await ctx.send(f'{ctx.author.name}, I did not understand that command.'
-                           ' Try typing `g!help` to see a list of available commands.')
-        elif isinstance(error, commands.errors.MissingRequiredArgument):
-            await ctx.send(f'{ctx.author.name}, there was an issue with that command,'
-                           f' type `g!help {ctx.args[1].command.name}` to learn more'
-                           ' about how to format that command')
-        elif isinstance(error, commands.ArgumentParsingError):
-            await ctx.send(f'{ctx.author.name}, there was an issue with your arguments,'
-                           f' type `g!help {ctx.args[1].command.name}` to learn more'
-                           ' about how to format that command')
-        elif isinstance(error, ignored):
-            return
-        else:
-            await ctx.send(f'{ctx.author.name}, something went wrong with your input.')
-
     @commands.command(aliases=["sg", "see_g", "s_gains"])
     async def see_gains(self, ctx, time="week", plot_type="line"):
         """
