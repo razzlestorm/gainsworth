@@ -1,5 +1,6 @@
 import logging
 import sys
+import discord
 from discord.ext import commands
 
 
@@ -61,19 +62,30 @@ class Gainsworth(commands.Cog):
     async def hello(self, ctx):
         """Says hello"""
         print("message received")
-        channel = ctx.channel
-        channels = ["gym-class-heroes"]
         if ctx.author == self.client.user:
             return
-        if channel.name in channels:
-            member = ctx.author
-            if self._last_member is None or self._last_member.id != member.id:
-                # {0.name} here comes from the MessageEmbed class's "fields" attr
-                await ctx.send('Hello {0.name}~'.format(member))
-            else:
-                await ctx.send('Hello {0.name}... Are you getting \
-                               your GAINS in?'.format(member))
-            self._last_member = member
+        member = ctx.author
+        if self._last_member is None or self._last_member.id != member.id:
+            # {0.name} here comes from the MessageEmbed class's "fields" attr
+            await ctx.send('Hello {0.name}~'.format(member))
+        else:
+            await ctx.send('Hello {0.name}... Are you getting \
+                            your GAINS in?'.format(member))
+        self._last_member = member
+
+    @commands.command(aliases=["gh", "contribute", "git", "ghub"])
+    async def github(self, ctx):
+        embed = discord.Embed()
+        embed.description = (
+                            "My code is available to peruse and contribute to on"
+                            " [GitHub](https://github.com/razzlestorm/gainsworth). You"
+                            " can also visit my "
+                            "[Discussions Page]"
+                            "(https://github.com/razzlestorm/gainsworth/discussions)"
+                            " to make suggestions, flesh out ideas, or show off how"
+                            " I'm working in your server!"
+                            )
+        await ctx.send(embed=embed)
 
 
 def setup(client):
