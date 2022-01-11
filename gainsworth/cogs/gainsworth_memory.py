@@ -171,8 +171,10 @@ class GainsMemory(commands.Cog):
             exercises = [e.name for e in user.exercises]
             msgs = []
             for pair in arg_pairs:
-                amount = [p for p in pair if p.isdigit()][0]
-                exercise = [p.replace(",", "") for p in pair if not p.isdigit()][0]
+                # TODO: Implement better arg handling
+                amount = [p for p in pair if p.strip("-+").isdigit()][0]
+                exercise = [p.replace(",", "") for p in pair
+                            if not p.strip("-+").isdigit()][0]
                 if exercise in exercises:
                     ses, unit = await self._add_gain(ses, user, amount, exercise)
                     # Some string formatting handling
