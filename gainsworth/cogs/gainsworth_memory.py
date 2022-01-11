@@ -161,7 +161,9 @@ class GainsMemory(commands.Cog):
         exercise you did, and what day you did it on (in UTC time). This will let you
         keep track of how your gains improve over time!
         An example command might look like this: \n
-        g!add_gains 10 pushups\n\n        Or:\n\n      !add_gains 1.5 planks\n\n
+        g!add_gains 10 Pushups\n\n        Or:\n\n      !add_gains 1.5 Planks\n\n
+        Or if you'd like to remove an erroneous entry:\n
+        g!add_gains -10 Pushups\n
         """
         ses, user = await self._check_registered(ctx)
         if len(args) % 2:
