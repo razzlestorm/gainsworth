@@ -1,7 +1,6 @@
 from datetime import datetime, timedelta
 import logging
 import io
-import sys
 from typing import List
 
 import discord
@@ -62,8 +61,8 @@ class GainsVision(commands.Cog):
             exercises = pd.read_sql(ses.query(Exercise)
                                     .filter(Exercise.user_id == user.id)
                                     .statement, ses.bind)
-            subset = exercises[exercises['date'] > 
-                               (datetime.utcnow() - 
+            subset = exercises[exercises['date'] >
+                               (datetime.utcnow() -
                                timedelta(days=TIMES.get(time, 7)))]
             ses.close()
             subset = subset.set_index('date')
