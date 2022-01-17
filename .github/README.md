@@ -44,6 +44,10 @@ Current features that are planned for the bot:
 * Setting of weekly/monthly goals
 * Customizable search (by specific exercises, date ranges, etc.)
 * Better admin DB interaction
+* Add caloric counter
+* Add personal time zones
+* Show both gains of same day + same size (currently only one is visible)
+* Add hourly trend/deep dive
 * ...
 
 
