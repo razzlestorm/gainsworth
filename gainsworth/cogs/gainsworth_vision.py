@@ -128,13 +128,13 @@ class GainsVision(commands.Cog):
                               title="GAINS!",
                               template="plotly_dark+xgridoff",
                               )
-                fig.update_traces(mode="markers+lines")
+                fig.update_traces(mode="markers+lines", marker={"opacity": 0.5})
                 max_val = subset_exc["reps"].max()
                 fig.update_layout(yaxis={"range": [0, max_val + max_val/10]})
             fig.write_image("exercises.png")
             with open("exercises.png", "rb") as f:
                 file = io.BytesIO(f.read())
-            image = discord.File(file, filename="d_exercises.png")
+            image = discord.File(file, filename="discord_exercises.png")
             await ctx.send(file=image)
 
 
