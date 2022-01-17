@@ -60,7 +60,7 @@ class GainsMemory(commands.Cog):
         ses.commit()
         return ses, unit
 
-    @commands.command(aliases=["ce", "create_e", "c_exercise"])
+    @commands.command(aliases=["ce", "Ce", "CE", "create_e", "c_exercise"])
     async def create_exercise(self, ctx, name, unit=None):
         """
         Use this command to create a custom exercise that you can then !add_gains to.
@@ -97,7 +97,7 @@ class GainsMemory(commands.Cog):
             ses.close()
             return
 
-    @commands.command(aliases=["le", "list_e", "l_exercises"])
+    @commands.command(aliases=["le", "Le", "LE" "list_e", "l_exercises"])
     async def list_exercises(self, ctx):
         """
         This command lists the exercises that Gainsworth is remembering for you.
@@ -126,7 +126,7 @@ class GainsMemory(commands.Cog):
             ses.close()
             return
 
-    @commands.command(aliases=["re", "remove_e", "r_exercise"])
+    @commands.command(aliases=["re", "Re", "RE", "remove_e", "r_exercise"])
     async def remove_exercise(self, ctx, exercise):
         """
         Use this command to remove ALL exercises of a certain name that you've been
@@ -153,7 +153,7 @@ class GainsMemory(commands.Cog):
             ses.close()
             return
 
-    @commands.command(aliases=["ag", "add_g", "a_gains"])
+    @commands.command(aliases=["ag", "AG", "Ag", "add_g", "a_gains"])
     async def add_gains(self, ctx, *args):
         """
         Use this command to tell Gainsworth about an exercise that you did!
@@ -177,7 +177,7 @@ class GainsMemory(commands.Cog):
                 amount, exercise = pair
                 amount = amount.strip(",;. ")
                 exercise = exercise.strip(",;. ")
-                if exercise[-1].isdigit():
+                if exercise[-1].isdigit() and any([c.isalpha() for c in amount]):
                     exercise, amount = amount, exercise
                 if exercise in exercises:
                     ses, unit = await self._add_gain(ses, user, amount, exercise)
@@ -205,7 +205,7 @@ class GainsMemory(commands.Cog):
             ses.close()
             return
 
-    @commands.command(aliases=["lg", "list_g", "l_gains"])
+    @commands.command(aliases=["lg", "Lg", "LG", "list_g", "l_gains"])
     async def list_gains(self, ctx):
         """
         Use this command to tell yourself and everyone else how awesome you are!
