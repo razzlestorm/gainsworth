@@ -161,7 +161,7 @@ class GainsMemory(commands.Cog):
         exercise you did, and what day you did it on (in UTC time). This will let you
         keep track of how your gains improve over time!
         An example command might look like this: \n
-        g!add_gains 10 Pushups\n\n        Or:\n\n      
+        g!add_gains 10 Pushups\n\n        Or:\n\n
         g!add_gains 1.5 Planks, 100 Situps, 50 Pushups\n\n
         Or if you'd like to remove an erroneous entry:\n
         g!add_gains -10 Pushups\n
