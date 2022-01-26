@@ -31,17 +31,14 @@ class GainsVision(commands.Cog):
         """
         print("Gainsworth is ready to visualize your gains!")
 
-    @commands.command(aliases=["sg", "see_g", "s_gains"])
-    async def see_gains(self, ctx, time="week", plot_type="line"):
+    async def _parse_args(self, arglist):
         """
-        Use this command to create a visualization of all your gains for the past week,
-        month, or year! Just type g!see_gains {week/month/season/year} {line/histogram},
-        and Gainsworth will create a graph that you can download and share with friends!
-        An example command might look like this: \n
-        g!see_gains month histogram \n
-        OR
-        g!see_gains (defaults to weekly line graphs)
+        This should handle parsing of any args passed into the see_gains command
+        and return them in a predetermined order, or return None if they are not
+        present or are incorrectly formatted. This assumes default behavior 
+        is to query a user's unfiltered weekly line plot.
         """
+        time = plot_type = activity_filter = None
         TIMES = {
             "week": 7,
             "weeks": 7,
@@ -53,22 +50,53 @@ class GainsVision(commands.Cog):
             "3months": 90,
             "year": 365
         }
+        PLOTS = {"hist", "histogram", "h", "his", "hgram",
+                 "line", "l", "linear"
+                }
+        # first check for time and plot_type
+        for a in arglist:
+            if a in TIMES.keys():
+                time = a
+            elif a in PLOTS:
+                plot_type = a
+            
+        # then we combine everything and get the activity filter args
+
+        # then check that time and plot_type aren't None
+        return time, plot_type, activity_filter
+
+    @commands.command(aliases=["sg", "see_g", "s_gains"])
+    async def see_gains(self, ctx, *args):
+        """
+        Use this command to create a visualization of all your gains for the past week,
+        month, or year! Just type g!see_gains {week/month/season/year} {line/histogram},
+        {show: exercise_name1, exercise_name2} and Gainsworth will create a graph that 
+        you can download and share with friends!\n
+        An example command might look like this: \n
+        g!see_gains month histogram \n
+        OR
+        g!see_gains (defaults to weekly line graphs)\n
+        OR EVEN:\n
+        g!see_gains week line show: Jogging Pushups\n
+        Use the word "show:" to only show certain exercises! 
+        """
         memory = self.client.get_cog("GainsMemory")
         if memory is not None:
             ses, user = await memory._check_registered(ctx)
         if user:
-            # this gets the df and filters by time
+            time, plot_type, activity_filter = self._parse_args(args)
             exercises = pd.read_sql(ses.query(Exercise)
                                     .filter(Exercise.user_id == user.id)
                                     .statement, ses.bind)
+            # this creates the df and filters by time
             subset = exercises[exercises['date'] >
                                (datetime.utcnow() -
-                               timedelta(days=TIMES.get(time, 7)))]
+                               timedelta(days=time))]
             ses.close()
             subset = subset.set_index('date')
             # create empty df filled with all dates in range
             end = datetime.utcnow()
-            start = (end-timedelta(days=TIMES.get(time, 7)))
+            start = (end-timedelta(days=time))
             dates = pd.date_range(start=start, end=end, freq='D')
             idx_ref = pd.DatetimeIndex(dates)
             idx_df = pd.DataFrame(index=idx_ref)
@@ -93,6 +121,7 @@ class GainsVision(commands.Cog):
             subset_exc = add_populated_rows(exc_names, subset_exc)
             # plotting logic
             # see templates: https://plotly.com/python/templates/#theming-and-templates
+            # separate these out into different functions
             if plot_type in ["hist", "histogram", "h", "his", "hgram"]:
                 get_max = subset_exc.groupby([pd.Grouper(freq='D'), "name"]) \
                           .sum().reset_index(level="name")
@@ -136,7 +165,6 @@ class GainsVision(commands.Cog):
                 file = io.BytesIO(f.read())
             image = discord.File(file, filename="discord_exercises.png")
             await ctx.send(file=image)
-
 
 def setup(client):
     """
