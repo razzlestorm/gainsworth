@@ -31,7 +31,7 @@ class GainsVision(commands.Cog):
         """
         print("Gainsworth is ready to visualize your gains!")
 
-    async def _parse_args(self, arglist):
+    async def _parse_args(self, exc_names, arglist):
         """
         This should handle parsing of any args passed into the see_gains command
         and return them in a predetermined order, or return None if they are not
@@ -50,19 +50,32 @@ class GainsVision(commands.Cog):
             "3months": 90,
             "year": 365
         }
-        PLOTS = {"hist", "histogram", "h", "his", "hgram",
+        PLOTS = {
+                 "hist", "histogram", "h", "his", "hgram",
                  "line", "l", "linear"
                 }
         # first check for time and plot_type
         for a in arglist:
             if a in TIMES.keys():
-                time = a
+                time = TIMES[a]
             elif a in PLOTS:
                 plot_type = a
             
         # then we combine everything and get the activity filter args
-
+        filtered_exc = None
+        if "show:" in arglist:
+            filtered_exc = " ".join(arglist).split(":")[1].strip()
+            filtered_exc = [e.strip(", ") for e in filtered_exc.split(" ")]
+            filtered_exc = [e for e in filtered_exc if e in exc_names]
         # then check that time and plot_type aren't None
+        if not time:
+            time = 7
+        if not plot_type:
+            plot_type = "line"
+        if not filtered_exc:
+            activity_filter = None
+        else:
+            activity_filter = filtered_exc
         return time, plot_type, activity_filter
 
     @commands.command(aliases=["sg", "see_g", "s_gains"])
@@ -84,14 +97,25 @@ class GainsVision(commands.Cog):
         if memory is not None:
             ses, user = await memory._check_registered(ctx)
         if user:
-            time, plot_type, activity_filter = self._parse_args(args)
             exercises = pd.read_sql(ses.query(Exercise)
                                     .filter(Exercise.user_id == user.id)
                                     .statement, ses.bind)
-            # this creates the df and filters by time
-            subset = exercises[exercises['date'] >
-                               (datetime.utcnow() -
-                               timedelta(days=time))]
+            exc_names = exercises.name.unique()
+            breakpoint()
+            time, plot_type, activity_filter = await self._parse_args(exc_names, args)
+            if not activity_filter:
+                # this creates the df and filters by time
+                subset = exercises[exercises['date'] >
+                                (datetime.utcnow() -
+                                timedelta(days=time))]
+            else:
+                # filters by exercise name
+                subset = exercises[exercises['date'] >
+                                (datetime.utcnow() -
+                                timedelta(days=time))]
+                mask = subset['name'].isin(activity_filter)
+                subset = subset[mask]
+            breakpoint()
             ses.close()
             subset = subset.set_index('date')
             # create empty df filled with all dates in range
