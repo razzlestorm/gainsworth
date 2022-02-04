@@ -101,7 +101,6 @@ class GainsVision(commands.Cog):
                                     .filter(Exercise.user_id == user.id)
                                     .statement, ses.bind)
             exc_names = exercises.name.unique()
-            breakpoint()
             time, plot_type, activity_filter = await self._parse_args(exc_names, args)
             if not activity_filter:
                 # this creates the df and filters by time
@@ -115,7 +114,6 @@ class GainsVision(commands.Cog):
                                 timedelta(days=time))]
                 mask = subset['name'].isin(activity_filter)
                 subset = subset[mask]
-            breakpoint()
             ses.close()
             subset = subset.set_index('date')
             # create empty df filled with all dates in range
@@ -160,7 +158,7 @@ class GainsVision(commands.Cog):
                                           },
                                    title="GAINS!",
                                    template="plotly_dark+xgridoff",
-                                   nbins=TIMES.get(time, 7),
+                                   nbins=time,
                                    barmode="group"
                                    )
                 max_val = get_max["reps"].max()
