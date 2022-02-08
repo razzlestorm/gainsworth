@@ -36,18 +36,21 @@ Small note: If editing the README, please conform to the
 ## Roadmap
 
 Current features that are planned for the bot:
-* ~User exercise tracking~
+* ~User activity tracking~
 * ~Allow !add_gains command to input multiple gains~
-* Customizable exercise reminders
+* Customizable activity reminders
 * ~Weekly/Monthly/Quarterly/Yearly gains graphs~
 * Randomize encouragement strings
 * Setting of weekly/monthly goals
-* Customizable search (by specific exercises, date ranges, etc.)
+* Customizable search (by specific activities, date ranges, etc.) (currently able to filter by activity name)
 * Better admin DB interaction
 * Add caloric counter
 * Add personal time zones
 * Show both gains of same day + same size (currently only one is visible)
 * Add hourly trend/deep dive
+* Add Data Retention period (credit to Sema)
+* Add remove_user function
+* Create changelog and have Gainsworth announce changes when re-deployed
 * ...
 
 

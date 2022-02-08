@@ -42,16 +42,16 @@ class Gainsworth(commands.Cog):
                            ' about how to format that command')
         # It's probably better to handle these errors in their respective methods
         elif "'NoneType' object has no attribute 'reps'" in str(error):
-            await ctx.send(f"I didn't find that exercise, {ctx.author.name}!"
-                           " Type `g!list_exercises` to see all the exercises I'm"
+            await ctx.send(f"I didn't find that activity, {ctx.author.name}!"
+                           " Type `g!list_activities` to see all the activities I'm"
                            " currently tracking.")
         elif "duplicate key" in str(error):
-            await ctx.send(f'That exercise already exists for you, {ctx.author.name}!'
-                           ' Type `g!list_exercises` to see all the exercises you have'
+            await ctx.send(f'That activity already exists for you, {ctx.author.name}!'
+                           ' Type `g!list_activities` to see all the activities you have'
                            ' already added.')
         elif "UnmappedInstanceError" in str(error):
-            await ctx.send(f"I didn't find that exercise, {ctx.author.name}!"
-                           " Type `g!list_exercises` to see all the exercises I'm"
+            await ctx.send(f"I didn't find that activity, {ctx.author.name}!"
+                           " Type `g!list_activities` to see all the activities I'm"
                            " currently tracking.")
         elif isinstance(error, ignored):
             return

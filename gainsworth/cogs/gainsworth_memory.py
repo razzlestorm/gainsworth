@@ -60,25 +60,25 @@ class GainsMemory(commands.Cog):
         ses.commit()
         return ses, unit
 
-    @commands.command(aliases=["ce", "Ce", "CE", "create_e", "c_exercise"])
-    async def create_exercise(self, ctx, name, unit=None):
+    @commands.command(aliases=["ca", "Ca", "CA", "create_a", "c_activity"])
+    async def create_activity(self, ctx, name, unit=None):
         """
-        Use this command to create a custom exercise that you can then !add_gains to.
-        Gainsworth will remember your gains on the various exercises that you have
-        added. Please specify the name and unit of measure for your exercise. Leave
-        the unit of measure blank for quantity-based exercises. Your exercise name
+        Use this command to create a custom activity that you can then !add_gains to.
+        Gainsworth will remember your gains on the various activities that you have
+        added. Please specify the name and unit of measure for your activity. Leave
+        the unit of measure blank for quantity-based activities. Your activity name
         should be just one word. An example command might look like this: \n
-        g!create_exercise Pushups\n\nOr:\n\ng!create_exercise Planks minutes\n\n
-        Or:\n\ng!create_exercise Jumping-Jacks\n\n
+        g!create_activity Pushups\n\nOr:\n\ng!create_activity StudyingPython minutes\n\n
+        Or:\n\ng!create_activity Jumping-Jacks\n\n
         **Remember**: Capitalization matters!
         """
         ses, user = await self._check_registered(ctx)
         if user:
             if ses.query(Exercise).filter(Exercise.user_id == user.id) \
                .filter(Exercise.name == name).first():
-                await ctx.send(f'That exercise already exists for you,'
-                               f' {ctx.author.name}! Type `g!list_exercises` to see all'
-                               ' the exercises you have already added.')
+                await ctx.send(f'That activity already exists for you,'
+                               f' {ctx.author.name}! Type `g!list_activities` to see all'
+                               ' the activities you have already added.')
             else:
                 exercise = Exercise(name=name,
                                     reps=0,
@@ -86,10 +86,10 @@ class GainsMemory(commands.Cog):
                                     date=datetime.utcnow(),
                                     user_id=user.id)
                 ses.add(exercise)
-                self.logger.info(f"New type of exercise created: {exercise}")
+                self.logger.info(f"New type of activity created: {exercise}")
                 ses.commit()
                 ses.close()
-                await ctx.send(f"{ctx.author.name}, your exercise has been created! You"
+                await ctx.send(f"{ctx.author.name}, your activity has been created! You"
                                " can now keep track of your daily gains with the"
                                " `g!add_gains` command."
                                f" Example: g!add_gains 10 {name}.")
@@ -97,10 +97,10 @@ class GainsMemory(commands.Cog):
             ses.close()
             return
 
-    @commands.command(aliases=["le", "Le", "LE" "list_e", "l_exercises"])
-    async def list_exercises(self, ctx):
+    @commands.command(aliases=["la", "La", "LA" "list_a", "l_activities"])
+    async def list_activities(self, ctx):
         """
-        This command lists the exercises that Gainsworth is remembering for you.
+        This command lists the activity that Gainsworth is remembering for you.
         """
         ses, user = await self._check_registered(ctx)
         if user:
@@ -109,7 +109,7 @@ class GainsMemory(commands.Cog):
             if len(exercises) < 1:
                 ses.close()
                 await ctx.send(f"{ctx.author.name}, it looks like you haven't created"
-                               " any exercises! Type `g!help create_exercise` to get"
+                               " any activities! Type `g!help create_activity` to get"
                                " started!")
             else:
                 formatted_exercises = []
@@ -120,20 +120,20 @@ class GainsMemory(commands.Cog):
                         formatted_exercises.append(f"{tup[0]}")
                 formatted_exercises = "\n".join(formatted_exercises)
                 ses.close()
-                await ctx.send(f"{ctx.author.name}, here is a list of your exercises!\n"
+                await ctx.send(f"{ctx.author.name}, here is a list of your activities!\n"
                                f"{formatted_exercises}")
         else:
             ses.close()
             return
 
-    @commands.command(aliases=["re", "Re", "RE", "remove_e", "r_exercise"])
-    async def remove_exercise(self, ctx, exercise):
+    @commands.command(aliases=["ra", "Ra", "RA", "remove_a", "r_activity"])
+    async def remove_activity(self, ctx, exercise):
         """
-        Use this command to remove ALL exercises of a certain name that you've been
+        Use this command to remove ALL activities of a certain name that you've been
         tracking from Gainsworth's memory banks. BEWARE! This will remove all gains
-        associated with that exercise that you've recorded.
+        associated with that activity that you've recorded.
         An example command might look like this: \n
-        g!remove_exercise Pushups\n\n
+        g!remove_activity Pushups\n\n
         """
         ses, user = await self._check_registered(ctx)
         if user:
@@ -142,12 +142,14 @@ class GainsMemory(commands.Cog):
             self.logger.info(f"records deleted: {remove_target}")
             # minus the Exercise made by g!ce
             total_removed = int(str(remove_target)) - 1
+            if total_removed < 0:
+                total_removed = 0
             ses.commit()
             ses.close()
-            await ctx.send(f"{ctx.author.name}, your **{total_removed}** exercise"
+            await ctx.send(f"{ctx.author.name}, your **{total_removed}** activity"
                            f" records of **{exercise}** were deleted. You can type"
-                           " `!list_exercises` to see which exercises I'm keeping"
-                           " track of, or `!help create_exercise` to see how you"
+                           " `!list_activities` to see which activities I'm keeping"
+                           " track of, or `!help create_activity` to see how you"
                            " start tracking a new one!")
         else:
             ses.close()
@@ -156,9 +158,9 @@ class GainsMemory(commands.Cog):
     @commands.command(aliases=["ag", "AG", "Ag", "add_g", "a_gains"])
     async def add_gains(self, ctx, *args):
         """
-        Use this command to tell Gainsworth about an exercise that you did!
-        Gainsworth will keep a record of your exercise, how much of that
-        exercise you did, and what day you did it on (in UTC time). This will let you
+        Use this command to tell Gainsworth about an activity that you did!
+        Gainsworth will keep a record of your activity, how much of that
+        activity you did, and what day you did it on (in UTC time). This will let you
         keep track of how your gains improve over time!
         An example command might look like this: \n
         g!add_gains 10 Pushups\n\n        Or:\n\n
@@ -190,17 +192,17 @@ class GainsMemory(commands.Cog):
                         unit = ""
                     msgs.append(f"{amount}{unit} {unit_handler}{exercise}")
                 else:
-                    await ctx.send(f"I didn't find that exercise, {exercise}, in your"
-                                   f" list, {ctx.author.name}! Type `g!list_exercises`"
-                                   " to see all the exercises I'm currently tracking.")
+                    await ctx.send(f"I didn't find that activity, {exercise}, in your"
+                                   f" list, {ctx.author.name}! Type `g!list_activities`"
+                                   " to see all the activities I'm currently tracking.")
                     ses.close()
                     return
             msgs = "\n".join(msgs)
             ses.close()
-            await ctx.send(f"{ctx.author.name}, I've recorded the following exercises:"
+            await ctx.send(f"{ctx.author.name}, I've recorded the following activities:"
                            f"\n{msgs}\nAwesome work! Try typing"
                            " `g!list_gains` or `g!see_gains` to see the totals"
-                           " of your exercises!")
+                           " of your activities!")
         else:
             ses.close()
             return
@@ -218,7 +220,7 @@ class GainsMemory(commands.Cog):
             if len(exercise_objs) < 1:
                 ses.close()
                 await ctx.send(f"{ctx.author.name}, it looks like you haven't created"
-                               " any exercises! Type `g!help create_exercise` to get"
+                               " any activities! Type `g!help create_activity` to get"
                                " started!")
             else:
                 totals = []
@@ -241,7 +243,6 @@ class GainsMemory(commands.Cog):
         else:
             ses.close()
             return
-    # eventually allow user to query their exercises and filter by exercise if they want
 
 
 def setup(client):

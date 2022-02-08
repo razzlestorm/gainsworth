@@ -82,8 +82,8 @@ class GainsVision(commands.Cog):
     async def see_gains(self, ctx, *args):
         """
         Use this command to create a visualization of all your gains for the past week,
-        month, or year! Just type g!see_gains {week/month/season/year} {line/histogram},
-        {show: exercise_name1, exercise_name2} and Gainsworth will create a graph that 
+        month, or year! Just type g!see_gains {week/month/season/year} {line/histogram}
+        {show: activity_name1, activity_name2}, and Gainsworth will create a graph that 
         you can download and share with friends!\n
         An example command might look like this: \n
         g!see_gains month histogram \n
@@ -91,7 +91,7 @@ class GainsVision(commands.Cog):
         g!see_gains (defaults to weekly line graphs)\n
         OR EVEN:\n
         g!see_gains week line show: Jogging Pushups\n
-        Use the word "show:" to only show certain exercises! 
+        Use the word "show:" to only show certain activities! 
         """
         memory = self.client.get_cog("GainsMemory")
         if memory is not None:
@@ -154,7 +154,7 @@ class GainsVision(commands.Cog):
                                    labels={
                                            "date": "Date",
                                            "reps": "No. of Reps",
-                                           "name": "Exercises:"
+                                           "name": "Activities:"
                                           },
                                    title="GAINS!",
                                    template="plotly_dark+xgridoff",
@@ -174,7 +174,7 @@ class GainsVision(commands.Cog):
                                       "index": "Date",
                                       "date": "Date",
                                       "reps": "Daily No. of Cumulative Reps",
-                                      "name": "Exercises:"
+                                      "name": "Activities:"
                                      },
                               title="GAINS!",
                               template="plotly_dark+xgridoff",
@@ -182,10 +182,10 @@ class GainsVision(commands.Cog):
                 fig.update_traces(mode="markers+lines", marker={"opacity": 0.5})
                 max_val = subset_exc["reps"].max()
                 fig.update_layout(yaxis={"range": [0, max_val + max_val/10]})
-            fig.write_image("exercises.png")
-            with open("exercises.png", "rb") as f:
+            fig.write_image("activities.png")
+            with open("activities.png", "rb") as f:
                 file = io.BytesIO(f.read())
-            image = discord.File(file, filename="discord_exercises.png")
+            image = discord.File(file, filename="discord_activities.png")
             await ctx.send(file=image)
 
 def setup(client):
