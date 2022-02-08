@@ -66,8 +66,8 @@ class GainsMemory(commands.Cog):
         Use this command to create a custom activity that you can then !add_gains to.
         Gainsworth will remember your gains on the various activities that you have
         added. Please specify the name and unit of measure for your activity. Leave
-        the unit of measure blank for quantity-based activities. Your activity name
-        should be just one word. An example command might look like this: \n
+        the unit of measure blank for quantity-based activities. **Your activity name
+        should be just one word**. An example command might look like this: \n
         g!create_activity Pushups\n\nOr:\n\ng!create_activity StudyingPython minutes\n\n
         Or:\n\ng!create_activity Jumping-Jacks\n\n
         **Remember**: Capitalization matters!
@@ -199,7 +199,7 @@ class GainsMemory(commands.Cog):
                     return
             msgs = "\n".join(msgs)
             ses.close()
-            await ctx.send(f"{ctx.author.name}, I've recorded the following activities:"
+            await ctx.send(f"{ctx.author.name}, I've recorded the following activity:"
                            f"\n{msgs}\nAwesome work! Try typing"
                            " `g!list_gains` or `g!see_gains` to see the totals"
                            " of your activities!")
