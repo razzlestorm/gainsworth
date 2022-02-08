@@ -65,11 +65,16 @@ class GainsMemory(commands.Cog):
         """
         Use this command to create a custom activity that you can then !add_gains to.
         Gainsworth will remember your gains on the various activities that you have
-        added. Please specify the name and unit of measure for your activity. Leave
-        the unit of measure blank for quantity-based activities. **Your activity name
-        should be just one word**. An example command might look like this: \n
-        g!create_activity Pushups\n\nOr:\n\ng!create_activity StudyingPython minutes\n\n
-        Or:\n\ng!create_activity Jumping-Jacks\n\n
+        added. Please specify the name and (optional) unit of measure for your activity. 
+        Leave the unit of measure blank for quantity-based activities. \n
+        **Your activity name should be just one word**. \n
+        An example command might look like this:
+        \n
+        g!create_activity Pushups\n
+        Or:\n
+        g!create_activity StudyingPython minutes\n
+        Or:\n
+        g!create_activity Jumping-Jacks\n\n
         **Remember**: Capitalization matters!
         """
         ses, user = await self._check_registered(ctx)
@@ -163,8 +168,9 @@ class GainsMemory(commands.Cog):
         activity you did, and what day you did it on (in UTC time). This will let you
         keep track of how your gains improve over time!
         An example command might look like this: \n
-        g!add_gains 10 Pushups\n\n        Or:\n\n
-        g!add_gains 1.5 Planks, 100 Situps, 50 Pushups\n\n
+        g!add_gains 10 Pushups\n
+        Or:\n
+        g!add_gains 1.5 Planks, 100 Situps, 50 Pushups\n
         Or if you'd like to remove an erroneous entry:\n
         g!add_gains -10 Pushups\n
         """

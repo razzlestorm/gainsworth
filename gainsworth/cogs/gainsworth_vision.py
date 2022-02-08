@@ -87,7 +87,7 @@ class GainsVision(commands.Cog):
         you can download and share with friends!\n
         An example command might look like this: \n
         g!see_gains month histogram \n
-        OR
+        OR\n
         g!see_gains (defaults to weekly line graphs)\n
         OR EVEN:\n
         g!see_gains week line show: Jogging Pushups\n
