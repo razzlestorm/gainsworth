@@ -12,6 +12,10 @@ A discord bot to help you reach your fitness goals!
   - [Contributing](#contributing)
   - [License](#license)
 
+## How to Use
+
+* You can invite the existing bot to your server by clicking this **[invite link](https://discord.com/api/oauth2/authorize?client_id=910743103785271356&permissions=309237648448&scope=bot)**! If you'd like to run the bot and manage its data yourself, the Discord.py library has a helpful [guide](https://discordpy.readthedocs.io/en/stable/discord.html).
+
 ## Maintainers
 
 * [razzlestorm](https://github.com/razzlestorm)
@@ -50,6 +54,7 @@ Current features that are planned for the bot:
 * Add hourly trend/deep dive
 * Add Data Retention period (credit to Sema)
 * Add remove_user function
+* Add remove all exercises functionality
 * Create changelog and have Gainsworth announce changes when re-deployed
 * ...
 
