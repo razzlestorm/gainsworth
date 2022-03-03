@@ -266,7 +266,6 @@ class GainsMemory(commands.Cog):
                                                 func.sum(Exercise.reps))
                             .filter(Exercise.user_id == user.id)
                             .group_by(Exercise.name, Exercise.unit).all()]
-                breakpoint()
                 for name, unit, reps in result:
                     if unit:
                         totals.append(f"{reps} {unit} of {name}")
