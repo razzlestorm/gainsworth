@@ -220,6 +220,8 @@ class GainsMemory(commands.Cog):
         Gainsworth will list out all the gains that you have recorded with the
         g!add_gains command.\n
         An example command might look like this: \n
+        g!lg\n
+        OR:\n
         g!list_gains month \n
         Supported times are: week, month, quarter/season, year.\n
         All gains since you began tracking gains are listed by default,
