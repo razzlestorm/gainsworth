@@ -222,9 +222,12 @@ class GainsMemory(commands.Cog):
         An example command might look like this: \n
         g!list_gains month \n
         Supported times are: week, month, quarter/season, year.\n
-        All gains are listed by default, or if there is an erroneous time filter.
+        All gains since you began tracking gains are listed by default,
+        or if there is an erroneous time filter.
         """
         TIMES = {
+            "day": 1,
+            "days": 1,
             "week": 7,
             "weeks": 7,
             "month": 30,
@@ -255,17 +258,19 @@ class GainsMemory(commands.Cog):
                             .filter(Exercise.date >= start)
                             .group_by(Exercise.name, Exercise.unit).all()]
                 else:
+                    start = user.date_created
                     result = [x for x in ses.query(Exercise.name,
                                                 Exercise.unit,
                                                 func.sum(Exercise.reps))
                             .filter(Exercise.user_id == user.id)
                             .group_by(Exercise.name, Exercise.unit).all()]
+                breakpoint()
                 for name, unit, reps in result:
                     if unit:
                         totals.append(f"{reps} {unit} of {name}")
                     else:
                         totals.append(f"{reps} {name}")
-                msg = "You've done a total of:\n"
+                msg = f"Since {start.date()}, you've done a total of:\n"
                 msg += "\n".join(totals)
                 ses.close()
                 await ctx.send(f"{ctx.author.name}, here is a list of your totals!\n"
