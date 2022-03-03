@@ -221,7 +221,8 @@ class GainsMemory(commands.Cog):
         g!add_gains command.\n
         An example command might look like this: \n
         g!list_gains month \n
-        Supported times are: week, month, quarter/season, year.
+        Supported times are: week, month, quarter/season, year.\n
+        All gains are listed by default, or if there is an erroneous time filter.
         """
         TIMES = {
             "week": 7,
