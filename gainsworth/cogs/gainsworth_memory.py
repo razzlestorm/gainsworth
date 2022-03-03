@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from decimal import Decimal
 import logging
 
@@ -214,12 +214,27 @@ class GainsMemory(commands.Cog):
             return
 
     @commands.command(aliases=["lg", "Lg", "LG", "list_g", "l_gains"])
-    async def list_gains(self, ctx):
+    async def list_gains(self, ctx, *args):
         """
         Use this command to tell yourself and everyone else how awesome you are!
         Gainsworth will list out all the gains that you have recorded with the
-        g!add_gains command.
+        g!add_gains command.\n
+        An example command might look like this: \n
+        g!list_gains month \n
+        Supported times are: week, month, quarter/season, year.\n
+        All gains are listed by default, or if there is an erroneous time filter.
         """
+        TIMES = {
+            "week": 7,
+            "weeks": 7,
+            "month": 30,
+            "months": 30,
+            "quarter": 90,
+            "season": 90,
+            "3month": 90,
+            "3months": 90,
+            "year": 365
+        }
         ses, user = await self._check_registered(ctx)
         if user:
             exercise_objs = [e for e in user.exercises]
@@ -230,11 +245,21 @@ class GainsMemory(commands.Cog):
                                " started!")
             else:
                 totals = []
-                result = [x for x in ses.query(Exercise.name,
-                                               Exercise.unit,
-                                               func.sum(Exercise.reps))
-                          .filter(Exercise.user_id == user.id)
-                          .group_by(Exercise.name, Exercise.unit).all()]
+                if len(args) == 1 and args[0] in TIMES:
+                    end = datetime.utcnow()
+                    start = (end-timedelta(days=TIMES.get(args[0])))
+                    result = [x for x in ses.query(Exercise.name,
+                                                Exercise.unit,
+                                                func.sum(Exercise.reps))
+                            .filter(Exercise.user_id == user.id)
+                            .filter(Exercise.date >= start)
+                            .group_by(Exercise.name, Exercise.unit).all()]
+                else:
+                    result = [x for x in ses.query(Exercise.name,
+                                                Exercise.unit,
+                                                func.sum(Exercise.reps))
+                            .filter(Exercise.user_id == user.id)
+                            .group_by(Exercise.name, Exercise.unit).all()]
                 for name, unit, reps in result:
                     if unit:
                         totals.append(f"{reps} {unit} of {name}")
