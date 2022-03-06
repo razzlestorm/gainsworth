@@ -1,4 +1,4 @@
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, Numeric, String
+from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, Integer, Numeric, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
@@ -8,6 +8,7 @@ Base = declarative_base()
 class User(Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
+    user_id = Column(BigInteger, nullable=False)
     name = Column(String, nullable=False)
     exercises = relationship('Exercise')
     date_created = Column(DateTime)
