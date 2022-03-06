@@ -4,7 +4,7 @@ import logging
 
 from decouple import config
 from discord.ext import commands
-from sqlalchemy import create_engine, func
+from sqlalchemy import create_engine, func, update
 from sqlalchemy.orm import sessionmaker
 
 from gainsworth.db.models import Exercise, User
@@ -35,17 +35,29 @@ class GainsMemory(commands.Cog):
         print("Gainsworth will now remember your gains!")
 
     async def _check_registered(self, ctx):
-        user = f"{ctx.author.name}#{ctx.author.discriminator}"
+        user_name = f"{ctx.author.name}#{ctx.author.discriminator}"
         if ctx.author == self.client.user:
             return
         ses = Session()
-        registered_user = ses.query(User).filter(User.name == user).first()
-        if not registered_user:
-            name = User(name=user, date_created=datetime.utcnow())
-            ses.add(name)
+        user_id = ctx.author.id
+        registered_id = ses.query(User).filter(User.user_id == user_id).first()
+        if not registered_id:
+            registered_username = ses.query(User).filter(User.name == user_name).first()
+            if not registered_username:
+                name = User(name=user_name,
+                            user_id=user_id,
+                            date_created=datetime.utcnow())
+                ses.add(name)
+                ses.commit()
+            if not registered_username.user_id:
+                registered_username.user_id = user_id
+                ses.commit()
+            registered_id = ses.query(User).filter(User.user_id == user_id).first()
+        if registered_id.name != user_name:
+            registered_id.name = user_name
             ses.commit()
-            registered_user = ses.query(User).filter(User.name == user).first()
-        return ses, registered_user
+        # add logic for updating username checking registered_id AND registered_username == current_username
+        return ses, registered_id
 
     async def _add_gain(self, ses, user, amt, exercise):
         unit = ses.query(Exercise).filter(Exercise.user_id == user.id) \
