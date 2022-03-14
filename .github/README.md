@@ -56,6 +56,8 @@ Current features that are planned for the bot:
 * Add remove_user function
 * Add remove all exercises functionality / remove multiple exercises in one line
 * Create changelog and have Gainsworth announce changes when re-deployed
+* CI/CD tests
+* Unit tests (if the above proves to be too complicated for Discord botting)
 * ...
 
 
