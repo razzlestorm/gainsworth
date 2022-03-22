@@ -47,6 +47,7 @@ Current features that are planned for the bot:
 * Randomize encouragement strings
 * Setting of weekly/monthly goals
 * Customizable search (by specific activities, date ranges, etc.) (currently able to filter by activity name)
+* Add ability to filter by all EXCEPT an activity (like g!sg show: !Pushups)
 * Better admin DB interaction
 * Add caloric counter
 * Add personal time zones

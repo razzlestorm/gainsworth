@@ -23,6 +23,7 @@ class Gainsworth(commands.Cog):
         same events and taking actions based on those events.
         """
         print("Gainsworth is ready to PUMP YOU UP!")
+        print(f"Gainsworth is in {len(self.client.guilds)} guilds!")
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
