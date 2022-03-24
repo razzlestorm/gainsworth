@@ -55,6 +55,7 @@ Current features that are planned for the bot:
 * Add hourly trend/deep dive
 * Add Data Retention period (credit to Sema)
 * Add remove_user function
+* Add function to rename activity
 * Add remove all exercises functionality / remove multiple exercises in one line
 * Create changelog and have Gainsworth announce changes when re-deployed
 * CI/CD tests
