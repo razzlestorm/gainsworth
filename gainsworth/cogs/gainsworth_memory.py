@@ -264,7 +264,7 @@ class GainsMemory(commands.Cog):
                 totals = []
                 if len(args) == 1 and args[0].lower() in TIMES:
                     end = datetime.utcnow()
-                    start = (end-timedelta(days=TIMES.get(args[0])))
+                    start = (end-timedelta(days=TIMES.get(args[0].lower())))
                     result = [x for x in ses.query(Exercise.name,
                                                 Exercise.unit,
                                                 func.sum(Exercise.reps))
