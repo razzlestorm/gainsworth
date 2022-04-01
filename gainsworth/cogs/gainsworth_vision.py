@@ -56,9 +56,9 @@ class GainsVision(commands.Cog):
                 }
         # first check for time and plot_type
         for a in arglist:
-            if a in TIMES.keys():
+            if a.lower() in TIMES.keys():
                 time = TIMES[a]
-            elif a in PLOTS:
+            elif a.lower() in PLOTS:
                 plot_type = a
             
         # then we combine everything and get the activity filter args
