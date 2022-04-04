@@ -1,4 +1,5 @@
 import logging
+import re
 import sys
 import discord
 from discord.ext import commands
@@ -15,6 +16,29 @@ class Gainsworth(commands.Cog):
         self.logger = logging.getLogger(__name__)
         self.logger.info('Gainsworth Cog instance created')
 
+    async def check_changelog(self):
+        """
+        Checks the version at the top of the changelog. If that version != self.version,
+        updates self.version in the config and then announces changes to all guilds.
+
+        NOT FULLY IMPLEMENTED YET
+        """
+        # (?<=\\n\\n##\s)+(.*?)(?=\\n\\n##\s) # Potential regex? Lookbehind isn't working
+        with open ("cfg/changelog.md", "r") as file:
+            changelog = file.readlines()
+        text = ""
+        add = False
+        for line in changelog:
+            if add and re.search("##\s\d\.\d\.\d" , l):
+                break
+            elif not add and re.search("##\s\d\.\d\.\d", line):
+                add = True
+                text += line
+            elif not add:
+                continue
+            else:
+                text += line
+
     @commands.Cog.listener()
     async def on_ready(self):
         """
@@ -24,6 +48,8 @@ class Gainsworth(commands.Cog):
         """
         print("Gainsworth is ready to PUMP YOU UP!")
         print(f"Gainsworth is in {len(self.client.guilds)} guilds!")
+        self.check_changelog()
+
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
