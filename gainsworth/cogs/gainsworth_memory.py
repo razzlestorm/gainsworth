@@ -75,7 +75,7 @@ class GainsMemory(commands.Cog):
     @commands.command(aliases=["ca", "Ca", "CA", "create_a", "c_activity"])
     async def create_activity(self, ctx, name, unit=None):
         """
-        Use this command to create a custom activity that you can then !add_gains to.
+        Create a custom activity that you can then !add_gains to.
         Gainsworth will remember your gains on the various activities that you have
         added. Please specify the name and (optional) unit of measure for your activity. 
         Leave the unit of measure blank for quantity-based activities. \n
@@ -117,7 +117,7 @@ class GainsMemory(commands.Cog):
     @commands.command(aliases=["la", "La", "LA" "list_a", "l_activities"])
     async def list_activities(self, ctx):
         """
-        This command lists the activity that Gainsworth is remembering for you.
+        List the activities that Gainsworth is remembering for you.
         """
         ses, user = await self._check_registered(ctx)
         if user:
@@ -146,7 +146,7 @@ class GainsMemory(commands.Cog):
     @commands.command(aliases=["ra", "Ra", "RA", "remove_a", "r_activity"])
     async def remove_activity(self, ctx, exercise):
         """
-        Use this command to remove ALL activities of a certain name that you've been
+        Remove ALL activities of a certain name that you've been
         tracking from Gainsworth's memory banks. BEWARE! This will remove all gains
         associated with that activity that you've recorded.
         An example command might look like this: \n
@@ -175,7 +175,7 @@ class GainsMemory(commands.Cog):
     @commands.command(aliases=["ag", "AG", "Ag", "add_g", "a_gains"])
     async def add_gains(self, ctx, *args):
         """
-        Use this command to tell Gainsworth about an activity that you did!
+        Tell Gainsworth about an activity that you did!
         Gainsworth will keep a record of your activity, how much of that
         activity you did, and what day you did it on (in UTC time). This will let you
         keep track of how your gains improve over time!
@@ -228,7 +228,7 @@ class GainsMemory(commands.Cog):
     @commands.command(aliases=["lg", "Lg", "LG", "list_g", "l_gains"])
     async def list_gains(self, ctx, *args):
         """
-        Use this command to tell yourself and everyone else how awesome you are!
+        Tell yourself and everyone else how awesome you are!
         Gainsworth will list out all the gains that you have recorded with the
         g!add_gains command.\n
         An example command might look like this: \n
