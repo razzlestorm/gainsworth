@@ -81,7 +81,7 @@ class GainsVision(commands.Cog):
     @commands.command(aliases=["sg", "see_g", "s_gains"])
     async def see_gains(self, ctx, *args):
         """
-        Use this command to create a visualization of all your gains for the past week,
+        Create a visualization of all your gains for the past week,
         month, or year! Just type g!see_gains {week/month/season/year} {line/histogram}
         {show: activity_name1, activity_name2}, and Gainsworth will create a graph that 
         you can download and share with friends!\n

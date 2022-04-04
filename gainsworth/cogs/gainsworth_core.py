@@ -76,7 +76,7 @@ class Gainsworth(commands.Cog):
 
     @commands.command(aliases=["gh", "contribute", "git", "ghub"])
     async def github(self, ctx):
-        """Displays links to GitHub, so you can read or contribute to my code!"""
+        """Display link to the GitHub, so you can read or contribute to my code!"""
         embed = discord.Embed()
         embed.description = (
                             "My code is available to peruse and contribute to on"
@@ -91,7 +91,7 @@ class Gainsworth(commands.Cog):
 
     @commands.command(aliases=["invite-link", "add-bot"])
     async def invite(self, ctx):
-        """Displays the link to invite Gainsworth to your own Discord!"""
+        """Display the link to invite Gainsworth to your own Discord!"""
         embed = discord.Embed()
         embed.description = (
                              "You can use this [invite link](https://discord.com/api/"
