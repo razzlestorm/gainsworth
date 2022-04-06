@@ -54,7 +54,7 @@ Current features that are planned for the bot:
 * Show both gains of same day + same size (currently only one is visible)
 * Add hourly trend/deep dive
 * Add Data Retention period (credit to Sema)
-* Add remove_user function
+* Add please_remove_me function
 * Add function to rename activity
 * Add remove all exercises functionality / remove multiple exercises in one line
 * Create changelog and have Gainsworth announce changes when re-deployed
