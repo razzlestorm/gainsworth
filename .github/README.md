@@ -60,6 +60,7 @@ Current features that are planned for the bot:
 * Create changelog and have Gainsworth announce changes when re-deployed
 * CI/CD tests
 * Unit tests (if the above proves to be too complicated for Discord botting)
+* Track consecutive days of activity, or % of time
 * ...
 
 
