@@ -1,4 +1,8 @@
+import json
 import logging
+from os.path import exists
+import pathlib
+import re
 import sys
 import discord
 from discord.ext import commands
@@ -10,10 +14,57 @@ class Gainsworth(commands.Cog):
         The init function will always take a client, which represents
          the particular bot that is using the cog.
         """
+        with open(pathlib.Path("gainsworth", "cfg", "gains_config.json")) as conf:
+            self.version = json.load(conf)["version"]
         self.client = client
         self._last_member = None
         self.logger = logging.getLogger(__name__)
         self.logger.info('Gainsworth Cog instance created')
+
+    async def check_changelog(self):
+        """
+        Checks the version at the top of the changelog. Returns the new version number
+        and text of that changelog.
+        """
+        log_path = pathlib.Path("gainsworth", "cfg", "changelog.md")
+        if not exists(log_path):
+            return None
+        with open(log_path, "r") as file:
+            changelog = file.readlines()
+        text = ""
+        add = False
+        for line in changelog:
+            if add and re.search("##\s\d\.\d\.\d" , line):
+                break
+            elif not add and re.search("##\s\d\.\d\.\d", line):
+                add = True
+                text += line
+            elif not add:
+                continue
+            else:
+                text += line
+        version = text.split("\n")[0].split(" ")[1]
+        return version, text
+
+    async def broadcast_changelog(self, text, filter_name="RazzleStorm's Bot Testing"):
+        """
+        Broadcast most recent changes to all servers in the first channel that
+        Gainsworth has permission to speak in, across all servers.
+        """
+        if filter_name:
+            guilds = [x for x in self.client.guilds if x.name==filter_name]
+        else:
+            guilds = self.clients.guilds
+        for guild in guilds:
+            for channel in guild.channels:
+                try:
+                    await channel.send(text)
+                    break
+                except Exception:
+                    continue
+                else:
+                    break
+        return True
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -24,6 +75,20 @@ class Gainsworth(commands.Cog):
         """
         print("Gainsworth is ready to PUMP YOU UP!")
         print(f"Gainsworth is in {len(self.client.guilds)} guilds!")
+        version, text = await self.check_changelog()
+        if self.version != version:
+            self.version = version
+            # update config with version
+            with open(pathlib.Path("gainsworth", "cfg", "gains_config.json"), "r") as conf:
+                config = json.load(conf)
+                conf_version = config['version']
+                config['version'] = self.version
+            with open(pathlib.Path("gainsworth", "cfg", "gains_config.json"), "w") as conf:
+                json.dump(config, conf)
+            if version.split(".")[1] != conf_version:
+                # broadcast changes
+                await self.broadcast_changelog(text)
+
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
