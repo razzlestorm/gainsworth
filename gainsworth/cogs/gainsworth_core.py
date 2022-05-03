@@ -46,7 +46,7 @@ class Gainsworth(commands.Cog):
         version = text.split("\n")[0].split(" ")[1]
         return version, text
 
-    async def broadcast_changelog(self, text, filter_name="RazzleStorm's Bot Testing"):
+    async def broadcast_changelog(self, text, filter_name=None):
         """
         Broadcast most recent changes to all servers in the first channel that
         Gainsworth has permission to speak in, across all servers.
@@ -85,6 +85,7 @@ class Gainsworth(commands.Cog):
                 config['version'] = self.version
             with open(pathlib.Path("gainsworth", "cfg", "gains_config.json"), "w") as conf:
                 json.dump(config, conf)
+                # checking for semi-major version changes
             if version.split(".")[1] != conf_version:
                 # broadcast changes
                 await self.broadcast_changelog(text)
