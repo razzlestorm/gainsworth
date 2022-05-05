@@ -39,14 +39,14 @@ Small note: If editing the README, please conform to the
 
 ## Roadmap
 
-Current features that are planned for the bot:
+Current features that are planned for the bot, in no particular order:
 * ~User activity tracking~
 * ~Allow !add_gains command to input multiple gains~
 * Customizable activity reminders
 * ~Weekly/Monthly/Quarterly/Yearly gains graphs~
 * Randomize encouragement strings
 * Setting of weekly/monthly goals
-* Customizable search (by specific activities, date ranges, etc.) (currently able to filter by activity name)
+* ~Customizable search (by specific activities, date ranges, etc.)~
 * Add ability to filter by all EXCEPT an activity (like g!sg show: !Pushups)
 * Better admin DB interaction
 * Add caloric counter
@@ -61,6 +61,7 @@ Current features that are planned for the bot:
 * CI/CD tests
 * Unit tests (if the above proves to be too complicated for Discord botting)
 * Track consecutive days of activity, or % of time
+* Add ability to insert gain at specific date/time.
 * ...
 
 
