@@ -271,8 +271,8 @@ class GainsMemory(commands.Cog):
                         try:
                             days = int(args[0])
                         except ValueError:
-                            try:
-                                days = int(float(args[0]))
+                            days = int(float(args[0]))
+                            
                     end = datetime.utcnow()
                     start = (end-timedelta(days=days))
                     result = [x for x in ses.query(Exercise.name,
