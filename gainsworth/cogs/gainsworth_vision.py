@@ -58,10 +58,16 @@ class GainsVision(commands.Cog):
                 }
         # first check for time and plot_type
         for a in arglist:
-            if a.lower() in TIMES.keys():
-                time = TIMES[a]
-            elif a.lower() in PLOTS:
+            if a.lower() in PLOTS:
                 plot_type = a
+            elif a.lower() in TIMES.keys():
+                time = TIMES[a]
+            elif a.isdigit():
+                try:
+                    time = int(a)
+                except ValueError:
+                    time = int(float(a))
+                
             
         # then we combine everything and get the activity filter args
         filtered_exc = None
@@ -84,9 +90,9 @@ class GainsVision(commands.Cog):
     async def see_gains(self, ctx, *args):
         """
         Create a visualization of all your gains for the past week,
-        month, or year! Just type g!see_gains {day/week/month/season/year} {line/histogram}
-        {show: activity_name1, activity_name2}, and Gainsworth will create a graph that 
-        you can download and share with friends!\n
+        month, or year! Just type g!see_gains {day/week/month/season/year/any number} 
+        {line/histogram} {show: activity_name1, activity_name2}, and Gainsworth will 
+        create a graph that you can download and share with friends!\n
         An example command might look like this: \n
         g!see_gains month histogram \n
         OR\n

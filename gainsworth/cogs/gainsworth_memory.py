@@ -235,11 +235,13 @@ class GainsMemory(commands.Cog):
         g!lg\n
         OR:\n
         g!list_gains month \n
-        Supported times are: day, week, month, quarter/season, year.\n
+        Supported times are: any number, 'day', 'week', 'month', 'quarter'/'season',
+         'year'.\n
         All gains since you began tracking gains are listed by default,
         or if there is an erroneous time filter.
         """
         TIMES = {
+            "today": 1, 
             "day": 1,
             "days": 1,
             "week": 7,
@@ -262,9 +264,17 @@ class GainsMemory(commands.Cog):
                                " started!")
             else:
                 totals = []
-                if len(args) == 1 and args[0].lower() in TIMES:
+                if len(args) == 1:
+                    if args[0].lower() in TIMES:
+                        days = TIMES.get(args[0].lower(), 1)
+                    elif args[0].isdigit():
+                        try:
+                            days = int(args[0])
+                        except ValueError:
+                            days = int(float(args[0]))
+                            
                     end = datetime.utcnow()
-                    start = (end-timedelta(days=TIMES.get(args[0].lower())))
+                    start = (end-timedelta(days=days))
                     result = [x for x in ses.query(Exercise.name,
                                                 Exercise.unit,
                                                 func.sum(Exercise.reps))

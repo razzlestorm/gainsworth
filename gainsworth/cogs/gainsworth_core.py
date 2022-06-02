@@ -54,11 +54,12 @@ class Gainsworth(commands.Cog):
         if filter_name:
             guilds = [x for x in self.client.guilds if x.name==filter_name]
         else:
-            guilds = self.clients.guilds
+            guilds = self.client.guilds
         for guild in guilds:
             for channel in guild.channels:
                 try:
                     await channel.send(text)
+                    print(f"changelog sent to {guild.name}: {channel.name}")
                     break
                 except Exception:
                     continue

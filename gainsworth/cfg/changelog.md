@@ -6,7 +6,7 @@ Released on June 1, 2022.
 
 ### Changed
 
-* Allow users to filter by day
+* Allow users to filter by day, as well as ints (for number of days)
 
 
 ## 0.2.3
