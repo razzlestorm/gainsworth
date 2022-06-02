@@ -235,7 +235,7 @@ class GainsMemory(commands.Cog):
         g!lg\n
         OR:\n
         g!list_gains month \n
-        Supported times are: week, month, quarter/season, year.\n
+        Supported times are: day, week, month, quarter/season, year.\n
         All gains since you began tracking gains are listed by default,
         or if there is an erroneous time filter.
         """

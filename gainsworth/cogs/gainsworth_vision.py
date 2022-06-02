@@ -40,6 +40,8 @@ class GainsVision(commands.Cog):
         """
         time = plot_type = activity_filter = None
         TIMES = {
+            "day": 1,
+            "days": 1,
             "week": 7,
             "weeks": 7,
             "month": 30,
@@ -82,7 +84,7 @@ class GainsVision(commands.Cog):
     async def see_gains(self, ctx, *args):
         """
         Create a visualization of all your gains for the past week,
-        month, or year! Just type g!see_gains {week/month/season/year} {line/histogram}
+        month, or year! Just type g!see_gains {day/week/month/season/year} {line/histogram}
         {show: activity_name1, activity_name2}, and Gainsworth will create a graph that 
         you can download and share with friends!\n
         An example command might look like this: \n
