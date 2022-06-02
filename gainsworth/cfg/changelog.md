@@ -1,5 +1,13 @@
 # Change Log
 
+## 0.2.4
+
+Released on June 1, 2022.
+
+### Changed
+
+* Allow users to filter by day
+
 
 ## 0.2.3
 
