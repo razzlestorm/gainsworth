@@ -10,7 +10,7 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     user_id = Column(BigInteger, nullable=False)
     name = Column(String, nullable=False)
-    exercises = relationship('Exercise')
+    exercises = relationship('Exercise', cascade="all, delete")
     date_created = Column(DateTime)
 
     def __repr__(self):
