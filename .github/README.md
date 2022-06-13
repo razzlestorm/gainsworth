@@ -53,10 +53,10 @@ Current features that are planned for the bot, in no particular order:
 * Add personal time zones
 * Show both gains of same day + same size (currently only one is visible)
 * Add hourly trend/deep dive
-* Add Data Retention period (credit to Sema)
-* Add please_remove_me function
+* ~Add Data Retention period (credit to Sema)~
+* ~Add please_remove_me function~
 * Add function to rename activity
-* Add remove all exercises functionality / remove multiple exercises in one line
+* ~Add remove all exercises functionality / remove multiple exercises in one line~
 * Create changelog and have Gainsworth announce changes when re-deployed
 * CI/CD tests
 * Unit tests (if the above proves to be too complicated for Discord botting)
