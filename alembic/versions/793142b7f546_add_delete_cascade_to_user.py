@@ -17,7 +17,7 @@ depends_on = None
 
 
 def upgrade() -> None:
-    op.alter_column("users")
+    op.alter_column("users", sa.ForeignKey('exercises', ondelete='CASCADE'))
 
 
 def downgrade() -> None:
