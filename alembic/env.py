@@ -1,5 +1,5 @@
 from logging.config import fileConfig
-
+import os 
 from decouple import config as dconfig
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
@@ -58,8 +58,11 @@ def run_migrations_online() -> None:
     and associate a connection with the context.
 
     """
+    config_section = config.get_section(config.config_ini_section)
+    url = os.getenv("DATABASE_URL")
+    config_section["sqlalchemy.url"] = url
     connectable = engine_from_config(
-        dconfig("DATABASE_URL"),
+        config_section,
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
