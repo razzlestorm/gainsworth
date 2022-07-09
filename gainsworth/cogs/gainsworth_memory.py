@@ -46,7 +46,8 @@ class GainsMemory(commands.Cog):
             if not registered_username:
                 name = User(name=user_name,
                             user_id=user_id,
-                            date_created=datetime.utcnow())
+                            date_created=datetime.utcnow(),
+                            last_active=datetime.utcnow())
                 ses.add(name)
                 ses.commit()
             if not registered_username.user_id:
@@ -69,6 +70,7 @@ class GainsMemory(commands.Cog):
                         user_id=user.id)
         ses.add(gain)
         self.logger.info(f"New gain added: {gain}")
+        user.last_active = datetime.utcnow()
         ses.commit()
         return ses, unit
 

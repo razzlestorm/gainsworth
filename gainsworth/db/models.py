@@ -12,6 +12,7 @@ class User(Base):
     name = Column(String, nullable=False)
     exercises = relationship('Exercise', cascade="all, delete")
     date_created = Column(DateTime)
+    last_active = Column(DateTime)
     auto_remove = Column(Boolean, default=True, nullable=False)
     reminder_interval = Column(Integer)
 
