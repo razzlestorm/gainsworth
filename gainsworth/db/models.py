@@ -1,4 +1,4 @@
-from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, Integer, Numeric, String
+from sqlalchemy import Boolean, BigInteger, Column, DateTime, ForeignKey, Integer, Numeric, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
@@ -10,8 +10,11 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     user_id = Column(BigInteger, nullable=False)
     name = Column(String, nullable=False)
-    exercises = relationship('Exercise')
+    exercises = relationship('Exercise', cascade="all, delete")
     date_created = Column(DateTime)
+    last_active = Column(DateTime)
+    auto_remove = Column(Boolean, default=True, nullable=False)
+    reminder_interval = Column(Integer)
 
     def __repr__(self):
         return (f"<User(name='{self.name}', date_created='{self.date_created}')>\n"

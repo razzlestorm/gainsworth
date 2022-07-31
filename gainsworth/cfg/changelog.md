@@ -1,5 +1,16 @@
 # Change Log
 
+## 0.2.5
+
+Released on August 1, 2022.
+
+### Added
+
+* g!remove_me_please command will now delete ALL of a user's data.
+* Gainsworth will now automatically remove your data if you don't interact with it for one year.
+* If you'd like Gainsworth to keep your data saved until its end-of-life, you can opt-in to have your data stored with the g!save_my_data command.
+
+
 ## 0.2.4
 
 Released on June 1, 2022.

@@ -46,7 +46,8 @@ class GainsMemory(commands.Cog):
             if not registered_username:
                 name = User(name=user_name,
                             user_id=user_id,
-                            date_created=datetime.utcnow())
+                            date_created=datetime.utcnow(),
+                            last_active=datetime.utcnow())
                 ses.add(name)
                 ses.commit()
             if not registered_username.user_id:
@@ -69,8 +70,62 @@ class GainsMemory(commands.Cog):
                         user_id=user.id)
         ses.add(gain)
         self.logger.info(f"New gain added: {gain}")
+        user.last_active = datetime.utcnow()
         ses.commit()
         return ses, unit
+
+    @commands.command(aliases=["ag", "AG", "Ag", "add_g", "a_gains"])
+    async def add_gains(self, ctx, *args):
+        """
+        Tell Gainsworth about an activity that you did!
+        Gainsworth will keep a record of your activity, how much of that
+        activity you did, and what day you did it on (in UTC time). This will let you
+        keep track of how your gains improve over time!
+        An example command might look like this: \n
+        g!add_gains 10 Pushups\n
+        Or:\n
+        g!add_gains 1.5 Planks, 100 Situps, 50 Pushups\n
+        Or if you'd like to remove an erroneous entry:\n
+        g!add_gains -10 Pushups\n
+        """
+        ses, user = await self._check_registered(ctx)
+        if len(args) % 2:
+            raise commands.ArgumentParsingError()
+        arg_pairs = [(args[ii], args[ii+1]) for ii in range(0, len(args)-1, 2)]
+        if user:
+            exercises = [e.name for e in user.exercises]
+            msgs = []
+            for pair in arg_pairs:
+                amount, exercise = pair
+                amount = amount.strip(",;. ")
+                exercise = exercise.strip(",;. ")
+                if exercise[-1].isdigit() and any([c.isalpha() for c in amount]):
+                    exercise, amount = amount, exercise
+                if exercise in exercises:
+                    ses, unit = await self._add_gain(ses, user, amount, exercise)
+                    # Some string formatting handling
+                    unit_handler = ""
+                    if unit:
+                        unit = " " + str(unit)
+                        unit_handler = "of "
+                    elif not unit:
+                        unit = ""
+                    msgs.append(f"{amount}{unit} {unit_handler}{exercise}")
+                else:
+                    await ctx.send(f"I didn't find that activity, {exercise}, in your"
+                                   f" list, {ctx.author.name}! Type `g!list_activities`"
+                                   " to see all the activities I'm currently tracking.")
+                    ses.close()
+                    return
+            msgs = "\n".join(msgs)
+            ses.close()
+            await ctx.send(f"{ctx.author.name}, I've recorded the following activity:"
+                           f"\n{msgs}\nAwesome work! Try typing"
+                           " `g!list_gains` or `g!see_gains` to see the totals"
+                           " of your activities!")
+        else:
+            ses.close()
+            return
 
     @commands.command(aliases=["ca", "Ca", "CA", "create_a", "c_activity"])
     async def create_activity(self, ctx, name, unit=None):
@@ -139,88 +194,6 @@ class GainsMemory(commands.Cog):
                 ses.close()
                 await ctx.send(f"{ctx.author.name}, here is a list of your activities!\n"
                                f"{formatted_exercises}")
-        else:
-            ses.close()
-            return
-
-    @commands.command(aliases=["ra", "Ra", "RA", "remove_a", "r_activity"])
-    async def remove_activity(self, ctx, exercise):
-        """
-        Remove ALL activities of a certain name that you've been
-        tracking from Gainsworth's memory banks. BEWARE! This will remove all gains
-        associated with that activity that you've recorded.
-        An example command might look like this: \n
-        g!remove_activity Pushups\n\n
-        """
-        ses, user = await self._check_registered(ctx)
-        if user:
-            remove_target = ses.query(Exercise).filter(Exercise.user_id == user.id) \
-                            .filter(Exercise.name == exercise).delete()
-            self.logger.info(f"records deleted: {remove_target}")
-            # minus the Exercise made by g!ce
-            total_removed = int(str(remove_target)) - 1
-            if total_removed < 0:
-                total_removed = 0
-            ses.commit()
-            ses.close()
-            await ctx.send(f"{ctx.author.name}, your **{total_removed}** activity"
-                           f" records of **{exercise}** were deleted. You can type"
-                           " `!list_activities` to see which activities I'm keeping"
-                           " track of, or `!help create_activity` to see how you"
-                           " start tracking a new one!")
-        else:
-            ses.close()
-            return
-
-    @commands.command(aliases=["ag", "AG", "Ag", "add_g", "a_gains"])
-    async def add_gains(self, ctx, *args):
-        """
-        Tell Gainsworth about an activity that you did!
-        Gainsworth will keep a record of your activity, how much of that
-        activity you did, and what day you did it on (in UTC time). This will let you
-        keep track of how your gains improve over time!
-        An example command might look like this: \n
-        g!add_gains 10 Pushups\n
-        Or:\n
-        g!add_gains 1.5 Planks, 100 Situps, 50 Pushups\n
-        Or if you'd like to remove an erroneous entry:\n
-        g!add_gains -10 Pushups\n
-        """
-        ses, user = await self._check_registered(ctx)
-        if len(args) % 2:
-            raise commands.ArgumentParsingError()
-        arg_pairs = [(args[ii], args[ii+1]) for ii in range(0, len(args)-1, 2)]
-        if user:
-            exercises = [e.name for e in user.exercises]
-            msgs = []
-            for pair in arg_pairs:
-                amount, exercise = pair
-                amount = amount.strip(",;. ")
-                exercise = exercise.strip(",;. ")
-                if exercise[-1].isdigit() and any([c.isalpha() for c in amount]):
-                    exercise, amount = amount, exercise
-                if exercise in exercises:
-                    ses, unit = await self._add_gain(ses, user, amount, exercise)
-                    # Some string formatting handling
-                    unit_handler = ""
-                    if unit:
-                        unit = " " + str(unit)
-                        unit_handler = "of "
-                    elif not unit:
-                        unit = ""
-                    msgs.append(f"{amount}{unit} {unit_handler}{exercise}")
-                else:
-                    await ctx.send(f"I didn't find that activity, {exercise}, in your"
-                                   f" list, {ctx.author.name}! Type `g!list_activities`"
-                                   " to see all the activities I'm currently tracking.")
-                    ses.close()
-                    return
-            msgs = "\n".join(msgs)
-            ses.close()
-            await ctx.send(f"{ctx.author.name}, I've recorded the following activity:"
-                           f"\n{msgs}\nAwesome work! Try typing"
-                           " `g!list_gains` or `g!see_gains` to see the totals"
-                           " of your activities!")
         else:
             ses.close()
             return
@@ -299,6 +272,78 @@ class GainsMemory(commands.Cog):
                 await ctx.send(f"{ctx.author.name}, here is a list of your totals!\n"
                                f"{msg}\nKeep up the **great gains** you're making!")
 
+        else:
+            ses.close()
+            return
+
+    @commands.command(aliases=["ra", "Ra", "RA", "remove_a", "r_activity"])
+    async def remove_activity(self, ctx, exercise):
+        """
+        Remove ALL activities of a certain name that you've been
+        tracking from Gainsworth's memory banks. BEWARE! This will remove all gains
+        associated with that activity that you've recorded.
+        An example command might look like this: \n
+        g!remove_activity Pushups\n\n
+        """
+        ses, user = await self._check_registered(ctx)
+        if user:
+            remove_target = ses.query(Exercise).filter(Exercise.user_id == user.id) \
+                            .filter(Exercise.name == exercise).delete()
+            self.logger.info(f"records deleted: {remove_target}")
+            # minus the Exercise made by g!ce
+            total_removed = int(str(remove_target)) - 1
+            if total_removed < 0:
+                total_removed = 0
+            ses.commit()
+            ses.close()
+            await ctx.send(f"{ctx.author.name}, your **{total_removed}** activity"
+                           f" records of **{exercise}** were deleted. You can type"
+                           " `!list_activities` to see which activities I'm keeping"
+                           " track of, or `!help create_activity` to see how you"
+                           " start tracking a new one!")
+        else:
+            ses.close()
+            return
+
+    @commands.command()
+    async def remove_me_please(self, ctx):
+        """
+        Ask Gainsworth to purge all information about you in its memory banks.\n
+        WARNING: This action is irreversible, and will delete all gains and progress
+        associated with you.
+        """
+        ses, user = await self._check_registered(ctx)
+        if user:
+            remove_target = ses.query(User).filter(User.id == user.id).delete()
+            self.logger.info(f"records deleted: {remove_target}")
+            ses.commit()
+            ses.close()
+            await ctx.send(f"{ctx.author.name}, all records of your activity was"
+                           f" removed from my database. If you'd like to start again,"
+                           " type `g!help create_activity` to get started."
+                           )
+        else:
+            ses.close()
+            return
+
+    @commands.command()
+    async def save_my_data(self, ctx):
+        """
+        This command will set the flag that would normally automatically purge your user
+        data after one year to 'False', meaning Gainsworth will store your activity data
+        indefinitely.
+        """
+        ses, user = await self._check_registered(ctx)
+        if user:
+            change_target = ses.query(User).filter(User.id == user.id).first()
+            change_target.auto_remove = False
+            self.logger.info(f"auto-remove flag for {change_target} removed")
+            ses.commit()
+            ses.close()
+            await ctx.send(f"{ctx.author.name}, your acitivity data will now be saved"
+                           f" until you choose to manually remove it with the"
+                           " `g!remove_me_please` command."
+                           )
         else:
             ses.close()
             return
