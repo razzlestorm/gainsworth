@@ -2,7 +2,7 @@
 
 ## 0.2.5
 
-Released on August 1, 2022.
+Released on July 31, 2022.
 
 ### Added
 
