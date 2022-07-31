@@ -9,13 +9,14 @@ like `feature-weight-tracker`, or `tests-exercise-reminder`.
 To learn a bit about Gainsworth and Discord Bot `Cogs`, take a look at the 
 `example.py` file in `gainsworth/cogs`. These are the basic components of a cog,
 which can be activated when the Gainsworth bot is started. Typically, each cog
-should provide some unique "single responsibility" functionality, and you can
+should provide some unique "single main responsibility" functionality, and you can
 think Gainsworth as the sum of its cogs. For more information on cogs, please
 see the [documentation](https://discordpy.readthedocs.io/en/latest/ext/commands/cogs.html).
 
 Once you have fully fleshed out your idea in code, continue following the steps
-below, including running tests to make sure that everything still works. Feel
-free to add tests to your Cog and/or new functions, to make sure that everything
+below, including running tests to make sure that everything still works. If you would
+like to join Gainsworth's testing server, you can do so [here](https://discord.gg/6sjkzJ3).
+Feel free to add tests to your Cog and/or new functions, to make sure that everything
 plays together well, then submit the pull request. Once your PR has been
 approved and merged into the `main` branch, your changes should be reflected
 in Gainsworth almost immediately!
