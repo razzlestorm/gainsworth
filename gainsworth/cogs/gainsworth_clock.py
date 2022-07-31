@@ -62,10 +62,12 @@ class GainsClock(commands.Cog):
                 try:
                     removed.append(user.user_id)
                     target = ses.query(User).filter(User.user_id == user.user_id).delete()
+                    ses.commit()
                 except Exception as e:
                     self.logger.error(f"Failed to remove user; {e}")
         #TODO: make sure this loop runs again on DC, and after init
         print("Inactive check completed")
+        ses.close()
         self.logger.info("list of IDs removed: {removed}")
 
     @remove_inactive.before_loop
