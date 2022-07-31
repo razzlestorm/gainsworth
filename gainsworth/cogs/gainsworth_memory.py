@@ -326,6 +326,28 @@ class GainsMemory(commands.Cog):
             ses.close()
             return
 
+    @commands.command()
+    async def save_my_data(self, ctx):
+        """
+        This command will set the flag that would normally automatically purge your user
+        data after one year to 'False', meaning Gainsworth will store your activity data
+        indefinitely.
+        """
+        ses, user = await self._check_registered(ctx)
+        if user:
+            change_target = ses.query(User).filter(User.id == user.id).first()
+            change_target.auto_remove = False
+            self.logger.info(f"auto-remove flag for {change_target} removed")
+            ses.commit()
+            ses.close()
+            await ctx.send(f"{ctx.author.name}, your acitivity data will now be saved"
+                           f" until you choose to manually remove it with the"
+                           " `g!remove_me_please` command."
+                           )
+        else:
+            ses.close()
+            return
+
 
 def setup(client):
     """
