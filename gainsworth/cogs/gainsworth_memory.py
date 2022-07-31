@@ -314,13 +314,8 @@ class GainsMemory(commands.Cog):
         """
         ses, user = await self._check_registered(ctx)
         if user:
-            remove_target = ses.query(User).filter(User.id == user.id) \
-                            .filter(Exercise.name == exercise).delete()
+            remove_target = ses.query(User).filter(User.id == user.id).delete()
             self.logger.info(f"records deleted: {remove_target}")
-            # minus the Exercise made by g!ce
-            total_removed = int(str(remove_target)) - 1
-            if total_removed < 0:
-                total_removed = 0
             ses.commit()
             ses.close()
             await ctx.send(f"{ctx.author.name}, all records of your activity was"

@@ -18,7 +18,7 @@ depends_on = None
 
 def upgrade() -> None:
     op.alter_column("users", sa.ForeignKey('exercises', ondelete='CASCADE'))
-    op.add_column("users", sa.Column('last_active', sa.DateTime(), default=func.utcnow()))
+    op.add_column("users", sa.Column('last_active', sa.DateTime(), default=func.now()))
  
 
 def downgrade() -> None:
