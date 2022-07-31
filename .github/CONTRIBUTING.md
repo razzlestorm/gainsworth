@@ -16,7 +16,7 @@ see the [documentation](https://discordpy.readthedocs.io/en/latest/ext/commands/
 Once you have fully fleshed out your idea in code, continue following the steps
 below, including running tests to make sure that everything still works. If you would
 like to join Gainsworth's testing server, you can do so [here](https://discord.gg/6sjkzJ3).
-Feel free to add tests to your Cog and/or new functions, to ake sure that everything
+Feel free to add tests to your Cog and/or new functions, to make sure that everything
 plays together well, then submit the pull request. Once your PR has been
 approved and merged into the `main` branch, your changes should be reflected
 in Gainsworth almost immediately!
