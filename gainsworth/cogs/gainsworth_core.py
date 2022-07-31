@@ -88,7 +88,7 @@ class Gainsworth(commands.Cog):
             with open(pathlib.Path("gainsworth", "cfg", "gains_config.json"), "w") as conf:
                 json.dump(config, conf)
                 # checking for semi-major version changes
-            if version.split(".")[1] != conf_version:
+            if version.split(".")[1] != conf_version.split(".")[1]:
                 # broadcast changes
                 await self.broadcast_changelog(text)
 
