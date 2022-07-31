@@ -114,6 +114,9 @@ class Gainsworth(commands.Cog):
             await ctx.send(f"I didn't find that activity, {ctx.author.name}!"
                            " Type `g!list_activities` to see all the activities I'm"
                            " currently tracking.")
+        elif "'NoneType' object has no attribute 'user_id'" in str(error):
+            await ctx.send(f"It looks like you haven't started tracking any activities"
+                           f", {ctx.author.name}. Type g!create_activity to get started!")
         elif "duplicate key" in str(error):
             await ctx.send(f'That activity already exists for you, {ctx.author.name}!'
                            ' Type `g!list_activities` to see all the activities you have'

@@ -28,7 +28,7 @@ class Exercise(Base):
     unit = Column(String)
     reps = Column(Numeric(precision=12, scale=2))
     date = Column(DateTime)
-    user_id = Column(Integer, ForeignKey('users.id'))
+    user_id = Column(Integer, ForeignKey('users.id', ondelete="CASCADE"))
 
     def __repr__(self):
         return (f"<Exercise(name='{self.name}', unit='{self.unit}', "
