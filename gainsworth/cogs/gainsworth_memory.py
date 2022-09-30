@@ -2,7 +2,10 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 import logging
 
+import discord
+
 from decouple import config
+from discord import app_commands
 from discord.ext import commands
 from sqlalchemy import create_engine, func, update
 from sqlalchemy.orm import sessionmaker
@@ -34,12 +37,12 @@ class GainsMemory(commands.Cog):
         """
         print("Gainsworth will now remember your gains!")
 
-    async def _check_registered(self, ctx):
-        user_name = f"{ctx.author.name}#{ctx.author.discriminator}"
-        if ctx.author == self.client.user:
+    async def _check_registered(self, interaction):
+        user_name = f"{interaction.user.name}#{interaction.user.discriminator}"
+        if interaction.user == self.client.user:
             return
         ses = Session()
-        user_id = ctx.author.id
+        user_id = interaction.user.id
         registered_id = ses.query(User).filter(User.user_id == user_id).first()
         if not registered_id:
             registered_username = ses.query(User).filter(User.name == user_name).first()
@@ -74,8 +77,8 @@ class GainsMemory(commands.Cog):
         ses.commit()
         return ses, unit
 
-    @commands.command(aliases=["ag", "AG", "Ag", "add_g", "a_gains"])
-    async def add_gains(self, ctx, *args):
+    @app_commands.command()
+    async def add_gains(self, interaction: discord.Interaction, args: str):
         """
         Tell Gainsworth about an activity that you did!
         Gainsworth will keep a record of your activity, how much of that
@@ -88,7 +91,7 @@ class GainsMemory(commands.Cog):
         Or if you'd like to remove an erroneous entry:\n
         g!add_gains -10 Pushups\n
         """
-        ses, user = await self._check_registered(ctx)
+        ses, user = await self._check_registered(interaction)
         if len(args) % 2:
             raise commands.ArgumentParsingError()
         arg_pairs = [(args[ii], args[ii+1]) for ii in range(0, len(args)-1, 2)]
@@ -112,14 +115,14 @@ class GainsMemory(commands.Cog):
                         unit = ""
                     msgs.append(f"{amount}{unit} {unit_handler}{exercise}")
                 else:
-                    await ctx.send(f"I didn't find that activity, {exercise}, in your"
-                                   f" list, {ctx.author.name}! Type `g!list_activities`"
+                    await interaction.response.send_message(f"I didn't find that activity, {exercise}, in your"
+                                   f" list, {interaction.user.name}! Type `g!list_activities`"
                                    " to see all the activities I'm currently tracking.")
                     ses.close()
                     return
             msgs = "\n".join(msgs)
             ses.close()
-            await ctx.send(f"{ctx.author.name}, I've recorded the following activity:"
+            await interaction.response.send_message(f"{interaction.user.name}, I've recorded the following activity:"
                            f"\n{msgs}\nAwesome work! Try typing"
                            " `g!list_gains` or `g!see_gains` to see the totals"
                            " of your activities!")
@@ -127,8 +130,8 @@ class GainsMemory(commands.Cog):
             ses.close()
             return
 
-    @commands.command(aliases=["ca", "Ca", "CA", "create_a", "c_activity"])
-    async def create_activity(self, ctx, name, unit=None):
+    @app_commands.command()
+    async def create_activity(self, interaction: discord.Interaction, name, unit=None):
         """
         Create a custom activity that you can then !add_gains to.
         Gainsworth will remember your gains on the various activities that you have
@@ -144,12 +147,12 @@ class GainsMemory(commands.Cog):
         g!create_activity Jumping-Jacks\n\n
         **Remember**: Capitalization matters!
         """
-        ses, user = await self._check_registered(ctx)
+        ses, user = await self._check_registered(interaction)
         if user:
             if ses.query(Exercise).filter(Exercise.user_id == user.id) \
                .filter(Exercise.name == name).first():
-                await ctx.send(f'That activity already exists for you,'
-                               f' {ctx.author.name}! Type `g!list_activities` to see all'
+                await interaction.response.send_message(f'That activity already exists for you,'
+                               f' {interaction.user.name}! Type `g!list_activities` to see all'
                                ' the activities you have already added.')
             else:
                 exercise = Exercise(name=name,
@@ -161,7 +164,7 @@ class GainsMemory(commands.Cog):
                 self.logger.info(f"New type of activity created: {exercise}")
                 ses.commit()
                 ses.close()
-                await ctx.send(f"{ctx.author.name}, your activity has been created! You"
+                await interaction.response.send_message(f"{interaction.user.name}, your activity has been created! You"
                                " can now keep track of your daily gains with the"
                                " `g!add_gains` command."
                                f" Example: g!add_gains 10 {name}.")
@@ -169,18 +172,18 @@ class GainsMemory(commands.Cog):
             ses.close()
             return
 
-    @commands.command(aliases=["la", "La", "LA" "list_a", "l_activities"])
-    async def list_activities(self, ctx):
+    @app_commands.command()
+    async def list_activities(self, interaction: discord.Interaction):
         """
         List the activities that Gainsworth is remembering for you.
         """
-        ses, user = await self._check_registered(ctx)
+        ses, user = await self._check_registered(interaction)
         if user:
             exercises = [(e.name, e.unit) for e in user.exercises]
             exercises = set(exercises)
             if len(exercises) < 1:
                 ses.close()
-                await ctx.send(f"{ctx.author.name}, it looks like you haven't created"
+                await interaction.response.send_message(f"{interaction.user.name}, it looks like you haven't created"
                                " any activities! Type `g!help create_activity` to get"
                                " started!")
             else:
@@ -192,14 +195,14 @@ class GainsMemory(commands.Cog):
                         formatted_exercises.append(f"{tup[0]}")
                 formatted_exercises = "\n".join(formatted_exercises)
                 ses.close()
-                await ctx.send(f"{ctx.author.name}, here is a list of your activities!\n"
+                await interaction.response.send_message(f"{interaction.user.name}, here is a list of your activities!\n"
                                f"{formatted_exercises}")
         else:
             ses.close()
             return
 
-    @commands.command(aliases=["lg", "Lg", "LG", "list_g", "l_gains"])
-    async def list_gains(self, ctx, *args):
+    @app_commands.command()
+    async def list_gains(self, interaction: discord.Interaction, *args):
         """
         Tell yourself and everyone else how awesome you are!
         Gainsworth will list out all the gains that you have recorded with the
@@ -227,12 +230,12 @@ class GainsMemory(commands.Cog):
             "3months": 90,
             "year": 365
         }
-        ses, user = await self._check_registered(ctx)
+        ses, user = await self._check_registered(interaction)
         if user:
             exercise_objs = [e for e in user.exercises]
             if len(exercise_objs) < 1:
                 ses.close()
-                await ctx.send(f"{ctx.author.name}, it looks like you haven't created"
+                await interaction.response.send_message(f"{interaction.user.name}, it looks like you haven't created"
                                " any activities! Type `g!help create_activity` to get"
                                " started!")
             else:
@@ -269,15 +272,15 @@ class GainsMemory(commands.Cog):
                 msg = f"Since {start.date()}, you've done a total of:\n"
                 msg += "\n".join(totals)
                 ses.close()
-                await ctx.send(f"{ctx.author.name}, here is a list of your totals!\n"
+                await interaction.response.send_message(f"{interaction.user.name}, here is a list of your totals!\n"
                                f"{msg}\nKeep up the **great gains** you're making!")
 
         else:
             ses.close()
             return
 
-    @commands.command(aliases=["ra", "Ra", "RA", "remove_a", "r_activity"])
-    async def remove_activity(self, ctx, exercise):
+    @app_commands.command()
+    async def remove_activity(self, interaction: discord.Interaction, exercise):
         """
         Remove ALL activities of a certain name that you've been
         tracking from Gainsworth's memory banks. BEWARE! This will remove all gains
@@ -285,7 +288,7 @@ class GainsMemory(commands.Cog):
         An example command might look like this: \n
         g!remove_activity Pushups\n\n
         """
-        ses, user = await self._check_registered(ctx)
+        ses, user = await self._check_registered(interaction)
         if user:
             remove_target = ses.query(Exercise).filter(Exercise.user_id == user.id) \
                             .filter(Exercise.name == exercise).delete()
@@ -296,7 +299,7 @@ class GainsMemory(commands.Cog):
                 total_removed = 0
             ses.commit()
             ses.close()
-            await ctx.send(f"{ctx.author.name}, your **{total_removed}** activity"
+            await interaction.response.send_message(f"{interaction.user.name}, your **{total_removed}** activity"
                            f" records of **{exercise}** were deleted. You can type"
                            " `!list_activities` to see which activities I'm keeping"
                            " track of, or `!help create_activity` to see how you"
@@ -305,20 +308,20 @@ class GainsMemory(commands.Cog):
             ses.close()
             return
 
-    @commands.command()
-    async def remove_me_please(self, ctx):
+    @app_commands.command()
+    async def remove_me_please(self, interaction: discord.Interaction):
         """
         Ask Gainsworth to purge all information about you in its memory banks.\n
         WARNING: This action is irreversible, and will delete all gains and progress
         associated with you.
         """
-        ses, user = await self._check_registered(ctx)
+        ses, user = await self._check_registered(interaction)
         if user:
             remove_target = ses.query(User).filter(User.id == user.id).delete()
             self.logger.info(f"records deleted: {remove_target}")
             ses.commit()
             ses.close()
-            await ctx.send(f"{ctx.author.name}, all records of your activity was"
+            await interaction.response.send_message(f"{interaction.user.name}, all records of your activity was"
                            f" removed from my database. If you'd like to start again,"
                            " type `g!help create_activity` to get started."
                            )
@@ -326,33 +329,34 @@ class GainsMemory(commands.Cog):
             ses.close()
             return
 
-    @commands.command()
-    async def save_my_data(self, ctx):
+    @app_commands.command()
+    async def save_my_data(self, interaction: discord.Interaction):
         """
         This command will set the flag that would normally automatically purge your user
         data after one year to 'False', meaning Gainsworth will store your activity data
         indefinitely.
         """
-        ses, user = await self._check_registered(ctx)
+        ses, user = await self._check_registered(interaction)
         if user:
             change_target = ses.query(User).filter(User.id == user.id).first()
             change_target.auto_remove = False
             self.logger.info(f"auto-remove flag for {change_target} removed")
             ses.commit()
             ses.close()
-            await ctx.send(f"{ctx.author.name}, your acitivity data will now be saved"
+            await interaction.response.send_message(f"{interaction.user.name}, your acitivity data will now be saved"
                            f" until you choose to manually remove it with the"
                            " `g!remove_me_please` command."
                            )
         else:
             ses.close()
+            await interaction.response.send_message("It appears you aren't using Gainsworth yet!")
             return
 
 
-def setup(client):
+async def setup(client):
     """
     This setup function must exist in every cog file and will ultimately have a
     nearly identical signature and logic to what you're seeing here.
     It's ultimately what loads the Cog into the bot.
     """
-    client.add_cog(GainsMemory(client))
+    await client.add_cog(GainsMemory(client))
