@@ -4,6 +4,7 @@ import io
 from typing import List
 
 import discord
+from discord import app_commands
 from discord.ext import commands
 import pandas as pd
 import plotly.express as px
@@ -31,13 +32,14 @@ class GainsVision(commands.Cog):
         """
         print("Gainsworth is ready to visualize your gains!")
 
-    async def _parse_args(self, exc_names, arglist):
+    async def _parse_args(self, exc_names, args):
         """
         This should handle parsing of any args passed into the see_gains command
         and return them in a predetermined order, or return None if they are not
         present or are incorrectly formatted. This assumes default behavior 
         is to query a user's unfiltered weekly line plot.
         """
+        arglist = args.split(" ")
         time = plot_type = activity_filter = None
         TIMES = {
             "day": 1,
@@ -86,8 +88,8 @@ class GainsVision(commands.Cog):
             activity_filter = filtered_exc
         return time, plot_type, activity_filter
 
-    @commands.command(aliases=["sg", "see_g", "s_gains"])
-    async def see_gains(self, ctx, *args):
+    @app_commands.command()
+    async def see_gains(self, interaction: discord.Interaction, args: str):
         """
         Create a visualization of all your gains for the past week,
         month, or year! Just type g!see_gains {day/week/month/season/year/any number} 
@@ -103,7 +105,7 @@ class GainsVision(commands.Cog):
         """
         memory = self.client.get_cog("GainsMemory")
         if memory is not None:
-            ses, user = await memory._check_registered(ctx)
+            ses, user = await memory._check_registered(interaction)
         if user:
             exercises = pd.read_sql(ses.query(Exercise)
                                     .filter(Exercise.user_id == user.id)
@@ -194,12 +196,12 @@ class GainsVision(commands.Cog):
             with open("activities.png", "rb") as f:
                 file = io.BytesIO(f.read())
             image = discord.File(file, filename="discord_activities.png")
-            await ctx.send(file=image)
+            await interaction.send_message(file=image)
 
-def setup(client):
+async def setup(client):
     """
     This setup function must exist in every cog file and will ultimately have a
     nearly identical signature and logic to what you're seeing here.
     It's ultimately what loads the Cog into the bot.
     """
-    client.add_cog(GainsVision(client))
+    await client.add_cog(GainsVision(client))
