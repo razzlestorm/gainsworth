@@ -5,7 +5,11 @@ import pathlib
 import re
 import sys
 import discord
+from discord import app_commands
 from discord.ext import commands
+
+from discord.ext.commands import Context, Greedy
+from typing import Literal, Optional
 
 
 class Gainsworth(commands.Cog):
@@ -94,59 +98,69 @@ class Gainsworth(commands.Cog):
 
 
     @commands.Cog.listener()
-    async def on_command_error(self, ctx, error):
+    async def on_command_error(self, interaction: discord.Interaction, error: discord.InteractionMessage) -> None:
         sys.stdout.write("Command Error: ")
         sys.stdout.write(f"{error}")
         ignored = (commands.CommandInvokeError)
         if isinstance(error, commands.CommandNotFound):
-            await ctx.send(f'{ctx.author.name}, I did not understand that command.'
+            await interaction.response.send_message(f'{interaction.user.name}, I did not understand that command.'
                            ' Try typing `g!help` to see a list of available commands.')
-        elif isinstance(error, commands.errors.MissingRequiredArgument):
-            await ctx.send(f'{ctx.author.name}, there was an issue with that command,'
-                           f' type `g!help {ctx.args[1].command.name}` to learn more'
-                           ' about how to format that command')
-        elif isinstance(error, commands.ArgumentParsingError):
-            await ctx.send(f'{ctx.author.name}, there was an issue with your arguments,'
-                           f' type `g!help {ctx.args[1].command.name}` to learn more'
-                           ' about how to format that command')
+        # elif isinstance(error, commands.errors.MissingRequiredArgument):
+        #     await interaction.response.send_message(f'{interaction.user.name}, there was an issue with that command,'
+        #                    f' type `g!help {ctx.args[1].command.name}` to learn more'
+        #                    ' about how to format that command')
+        # elif isinstance(error, commands.ArgumentParsingError):
+        #     await interaction.response.send_message(f'{interaction.user.name}, there was an issue with your arguments,'
+        #                    f' type `g!help {ctx.args[1].command.name}` to learn more'
+        #                    ' about how to format that command')
         # It's probably better to handle these errors in their respective methods
         elif "'NoneType' object has no attribute 'reps'" in str(error):
-            await ctx.send(f"I didn't find that activity, {ctx.author.name}!"
+            await interaction.response.send_message(f"I didn't find that activity, {interaction.user.name}!"
                            " Type `g!list_activities` to see all the activities I'm"
                            " currently tracking.")
         elif "'NoneType' object has no attribute 'user_id'" in str(error):
-            await ctx.send(f"It looks like you haven't started tracking any activities"
-                           f", {ctx.author.name}. Type g!create_activity to get started!")
+            await interaction.response.send_message(f"It looks like you haven't started tracking any activities"
+                           f", {interaction.user.name}. Type g!create_activity to get started!")
         elif "duplicate key" in str(error):
-            await ctx.send(f'That activity already exists for you, {ctx.author.name}!'
+            await interaction.response.send_message(f'That activity already exists for you, {interaction.user.name}!'
                            ' Type `g!list_activities` to see all the activities you have'
                            ' already added.')
         elif "UnmappedInstanceError" in str(error):
-            await ctx.send(f"I didn't find that activity, {ctx.author.name}!"
+            await interaction.response.send_message(f"I didn't find that activity, {interaction.user.name}!"
                            " Type `g!list_activities` to see all the activities I'm"
                            " currently tracking.")
         elif isinstance(error, ignored):
             return
         else:
-            await ctx.send(f'{ctx.author.name}, something went wrong with your input.')
+            await interaction.response.send_message(f'{interaction.user.name}, something went wrong with your input.')
 
-    @commands.command()
-    async def hello(self, ctx):
+    @commands.command(aliases=["sync"])
+    @commands.is_owner() #will raise an error if the person who executed the command is not the owner of the bot
+    async def sync_command(self, ctx):
+        # self.client.tree.copy_global_to(guild = discord.Object(id=740310401001980036))
+        # If testing remember to put the testing guild in the below sync
+        await self.client.tree.sync()
+        await ctx.reply("Synced!")
+        print("Synced!")
+
+
+    @app_commands.command()
+    async def hello(self, interaction: discord.Interaction) -> None:
         """Says hello"""
         print("message received")
-        if ctx.author == self.client.user:
+        if interaction.user == self.client.user:
             return
-        member = ctx.author
+        member = interaction.user
         if self._last_member is None or self._last_member.id != member.id:
             # {0.name} here comes from the MessageEmbed class's "fields" attr
-            await ctx.send('Hello {0.name}~'.format(member))
+            await interaction.response.send_message('Hello {0.name}~'.format(member))
         else:
-            await ctx.send('Hello {0.name}... Are you getting \
+            await interaction.response.send_message('Hello {0.name}... Are you getting \
                             your GAINS in?'.format(member))
         self._last_member = member
 
-    @commands.command(aliases=["gh", "contribute", "git", "ghub"])
-    async def github(self, ctx):
+    @app_commands.command()
+    async def github(self, interaction: discord.Interaction) -> None:
         """Display link to the GitHub, so you can read or contribute to my code!"""
         embed = discord.Embed()
         embed.description = (
@@ -158,10 +172,10 @@ class Gainsworth(commands.Cog):
                             " to make suggestions, flesh out ideas, or show off how"
                             " I'm working in your server!"
                             )
-        await ctx.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
-    @commands.command(aliases=["invite-link", "add-bot"])
-    async def invite(self, ctx):
+    @app_commands.command()
+    async def invite(self, interaction: discord.Interaction) -> None:
         """Display the link to invite Gainsworth to your own Discord!"""
         embed = discord.Embed()
         embed.description = (
@@ -171,13 +185,12 @@ class Gainsworth(commands.Cog):
                              " to your Discord server! Be sure to set my permissions to"
                              " limit me to the channels you would like me to be in!"
         )
-        await ctx.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
-
-def setup(client):
+async def setup(client):
     """
     This setup function must exist in every cog file and will ultimately have a
     nearly identical signature and logic to what you're seeing here.
     It's ultimately what loads the Cog into the bot.
     """
-    client.add_cog(Gainsworth(client))
+    await client.add_cog(Gainsworth(client))

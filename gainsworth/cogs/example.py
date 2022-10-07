@@ -34,10 +34,10 @@ class Example(commands.Cog):
         await ctx.send("Yoohoo! This command runs in the Example cog")
 
 
-def setup(client):
+async def setup(client):
     """
     This setup function must exist in every cog file and will ultimately have a
     nearly identical signature and logic to what you're seeing here.
     It's ultimately what loads the Cog into the bot.
     """
-    client.add_cog(Example(client))
+    await client.add_cog(Example(client))

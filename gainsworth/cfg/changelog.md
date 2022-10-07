@@ -1,5 +1,21 @@
 # Change Log
 
+
+## 0.5.0
+
+Released on October 6, 2022.
+
+### New Highlights
+
+* Gainsworth now uses slash commands! Slash command descriptions and instructions will be updated in the days to come, but all previous functionality should be working.
+* Gainsworth now automatically removes your data after a year of no interactions.
+* the /see_gains command can filter on exercise names, and /list_gains command can filter by number of days
+
+### Changed
+
+* BREAKING: Since Discord Bots no longer read messages, all Gainsworth commands are slash commands (type '/' to use).
+
+
 ## 0.2.5
 
 Released on July 31, 2022.
