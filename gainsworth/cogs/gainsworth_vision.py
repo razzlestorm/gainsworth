@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 import logging
 import io
-from typing import List
+from typing import List, Literal
 
 import discord
 from discord import app_commands
@@ -51,15 +51,11 @@ class GainsVision(commands.Cog):
         return activity_filter
 
     @app_commands.command()
-    @app_commands.choices(plot_type=[
-        app_commands.Choice(name='line', value=1),
-        app_commands.Choice(name='histogram', value=2)
-    ])
     async def see_gains(
         self, 
         interaction: discord.Interaction, 
         days: int=7, 
-        plot_type: app_commands.Choice[int]=app_commands.Choice[1],
+        plot_type: Literal['line', 'histogram'] = 'line',
         show: str=''
         ):
         """
@@ -135,7 +131,7 @@ class GainsVision(commands.Cog):
             # plotting logic
             # see templates: https://plotly.com/python/templates/#theming-and-templates
             # separate these out into different functions
-            if plot_type.name in ["hist", "histogram", "h", "his", "hgram"]:
+            if plot_type in ["hist", "histogram", "h", "his", "hgram"]:
                 get_max = subset_exc.groupby([pd.Grouper(freq='D'), "name"]) \
                           .sum().reset_index(level="name")
                 fig = px.histogram(subset_exc,
