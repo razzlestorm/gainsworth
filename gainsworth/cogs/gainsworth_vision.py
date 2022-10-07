@@ -50,6 +50,11 @@ class GainsVision(commands.Cog):
             activity_filter = filtered_exc
         return activity_filter
 
+    @app_commands.describe(
+        days="The number of days in the past you want to plot your gains from, defaults to 7",
+        plot_type="Currently two types of plot to choose from!",
+        show="Use to only see the activities you list here, separated by a space"
+    )
     @app_commands.command()
     async def see_gains(
         self, 
