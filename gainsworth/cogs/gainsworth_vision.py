@@ -32,77 +32,50 @@ class GainsVision(commands.Cog):
         """
         print("Gainsworth is ready to visualize your gains!")
 
-    async def _parse_args(self, exc_names, args):
+    async def _parse_filter(self, exc_names, show):
         """
         This should handle parsing of any args passed into the see_gains command
         and return them in a predetermined order, or return None if they are not
         present or are incorrectly formatted. This assumes default behavior 
         is to query a user's unfiltered weekly line plot.
         """
-        arglist = args.split(" ")
-        time = plot_type = activity_filter = None
-        TIMES = {
-            "day": 1,
-            "days": 1,
-            "week": 7,
-            "weeks": 7,
-            "month": 30,
-            "months": 30,
-            "quarter": 90,
-            "season": 90,
-            "3month": 90,
-            "3months": 90,
-            "year": 365
-        }
-        PLOTS = {
-                 "hist", "histogram", "h", "his", "hgram",
-                 "line", "l", "linear"
-                }
-        # first check for time and plot_type
-        for a in arglist:
-            if a.lower() in PLOTS:
-                plot_type = a
-            elif a.lower() in TIMES.keys():
-                time = TIMES[a]
-            elif a.isdigit():
-                try:
-                    time = int(a)
-                except ValueError:
-                    time = int(float(a))
-                
-            
-        # then we combine everything and get the activity filter args
         filtered_exc = None
-        if "show:" in arglist:
-            filtered_exc = " ".join(arglist).split(":")[1].strip()
-            filtered_exc = [e.strip(", ") for e in filtered_exc.split(" ")]
+        if show:
+            filtered_exc = [e.strip(", ") for e in show.split(" ")]
             filtered_exc = [e for e in filtered_exc if e in exc_names]
         # then check that time and plot_type aren't None
-        if not time:
-            time = 7
-        if not plot_type:
-            plot_type = "line"
         if not filtered_exc:
             activity_filter = None
         else:
             activity_filter = filtered_exc
-        return time, plot_type, activity_filter
+        return activity_filter
 
     @app_commands.command()
-    async def see_gains(self, interaction: discord.Interaction, args: str):
+    @app_commands.choices(plot_type=[
+        app_commands.Choice(name='line', value=1),
+        app_commands.Choice(name='histogram', value=2)
+    ])
+    async def see_gains(
+        self, 
+        interaction: discord.Interaction, 
+        days: int=7, 
+        plot_type: app_commands.Choice[int]=1,
+        show: str=''
+        ):
         """
-        Create a visualization of all your gains for the past week,
-        month, or year! Just type g!see_gains {day/week/month/season/year/any number} 
+        Create a visualization of all your gains for the past X days! 
+        Just type /see_gains {day/week/month/season/year/any number} 
         {line/histogram} {show: activity_name1, activity_name2}, and Gainsworth will 
         create a graph that you can download and share with friends!\n
         An example command might look like this: \n
-        g!see_gains month histogram \n
+        /see_gains month histogram \n
         OR\n
-        g!see_gains (defaults to weekly line graphs)\n
+        /see_gains (defaults to weekly line graphs)\n
         OR EVEN:\n
-        g!see_gains week line show: Jogging Pushups\n
+        /see_gains week line show: Jogging Pushups\n
         Use the word "show:" to only show certain activities! 
         """
+        await interaction.response.defer(thinking=True)
         memory = self.client.get_cog("GainsMemory")
         if memory is not None:
             ses, user = await memory._check_registered(interaction)
@@ -111,24 +84,32 @@ class GainsVision(commands.Cog):
                                     .filter(Exercise.user_id == user.id)
                                     .statement, ses.bind)
             exc_names = exercises.name.unique()
-            time, plot_type, activity_filter = await self._parse_args(exc_names, args)
+            activity_filter = await self._parse_filter(exc_names, show)
+            if isinstance(days, str):
+                try:
+                    days = int(days)
+                except ValueError:
+                    try:
+                        days = float(days)
+                    except ValueError:
+                        await interaction.followup.send("There was a problem with your days, please input a whole number!")
             if not activity_filter:
                 # this creates the df and filters by time
                 subset = exercises[exercises['date'] >
                                 (datetime.utcnow() -
-                                timedelta(days=time))]
+                                timedelta(days=days))]
             else:
                 # filters by exercise name
                 subset = exercises[exercises['date'] >
                                 (datetime.utcnow() -
-                                timedelta(days=time))]
+                                timedelta(days=days))]
                 mask = subset['name'].isin(activity_filter)
                 subset = subset[mask]
             ses.close()
             subset = subset.set_index('date')
             # create empty df filled with all dates in range
             end = datetime.utcnow()
-            start = (end-timedelta(days=time))
+            start = (end-timedelta(days=days))
             dates = pd.date_range(start=start, end=end, freq='D')
             idx_ref = pd.DatetimeIndex(dates)
             idx_df = pd.DataFrame(index=idx_ref)
@@ -154,7 +135,7 @@ class GainsVision(commands.Cog):
             # plotting logic
             # see templates: https://plotly.com/python/templates/#theming-and-templates
             # separate these out into different functions
-            if plot_type in ["hist", "histogram", "h", "his", "hgram"]:
+            if plot_type.name in ["hist", "histogram", "h", "his", "hgram"]:
                 get_max = subset_exc.groupby([pd.Grouper(freq='D'), "name"]) \
                           .sum().reset_index(level="name")
                 fig = px.histogram(subset_exc,
@@ -168,7 +149,7 @@ class GainsVision(commands.Cog):
                                           },
                                    title="GAINS!",
                                    template="plotly_dark+xgridoff",
-                                   nbins=time,
+                                   nbins=days,
                                    barmode="group"
                                    )
                 max_val = get_max["reps"].max()
@@ -196,7 +177,7 @@ class GainsVision(commands.Cog):
             with open("activities.png", "rb") as f:
                 file = io.BytesIO(f.read())
             image = discord.File(file, filename="discord_activities.png")
-            await interaction.send_message(file=image)
+            await interaction.followup.send(file=image)
 
 async def setup(client):
     """
