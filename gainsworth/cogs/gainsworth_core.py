@@ -63,7 +63,7 @@ class Gainsworth(commands.Cog):
             for channel in guild.channels:
                 try:
                     await channel.send(text)
-                    await channel.send("If you'd like to stop receiving this changelog, please create an issue on my `g!github`") 
+                    await channel.send("If you'd like to stop receiving this changelog, please create an issue on my `/github`") 
                     print(f"changelog sent to {guild.name}: {channel.name}")
                     break
                 except Exception:
@@ -137,9 +137,9 @@ class Gainsworth(commands.Cog):
     @commands.command(aliases=["sync"])
     @commands.is_owner() #will raise an error if the person who executed the command is not the owner of the bot
     async def sync_command(self, ctx):
-        # self.client.tree.copy_global_to(guild = discord.Object(id=740310401001980036))
+        self.client.tree.copy_global_to(guild = discord.Object(id=740310401001980036))
         # If testing remember to put the testing guild in the below sync
-        await self.client.tree.sync()
+        await self.client.tree.sync(guild = discord.Object(id=740310401001980036))
         await ctx.reply("Synced!")
         print("Synced!")
 
