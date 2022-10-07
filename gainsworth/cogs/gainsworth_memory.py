@@ -77,6 +77,10 @@ class GainsMemory(commands.Cog):
         ses.commit()
         return ses, unit
 
+
+    @app_commands.describe(
+        exercises="Currently add this like: exercise_name1 100 exercise_name2 50",
+    )
     @app_commands.command()
     async def add_gains(self, interaction: discord.Interaction, exercises: str) -> None:
         """
@@ -206,6 +210,10 @@ class GainsMemory(commands.Cog):
             ses.close()
             return
 
+
+    @app_commands.describe(
+        days="The number of days in the past you want to list your gains from, defaults to 7",
+    )
     @app_commands.command()
     async def list_gains(self, interaction: discord.Interaction, days: int=1) -> None:
         """
@@ -264,6 +272,9 @@ class GainsMemory(commands.Cog):
             ses.close()
             return
 
+    @app_commands.describe(
+        exercise="The name of the exercise you wish to remove",
+    )
     @app_commands.command()
     async def remove_activity(self, interaction: discord.Interaction, exercise: str) -> None:
         """
