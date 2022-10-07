@@ -181,7 +181,7 @@ class Gainsworth(commands.Cog):
         embed.description = (
                              "You can use this [invite link](https://discord.com/api/"
                              "oauth2/authorize?client_id=910743103785271356"
-                             "&permissions=309237648448&scope=bot) to invite me"
+                             "&permissions=397284535296&scope=bot%20applications.commands) to invite me"
                              " to your Discord server! Be sure to set my permissions to"
                              " limit me to the channels you would like me to be in!"
         )
