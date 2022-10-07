@@ -1,6 +1,10 @@
+import asyncio
 import logging
 from pathlib import Path
 import sys
+import time
+
+import discord
 
 from decouple import config
 from discord.ext import commands
@@ -21,24 +25,52 @@ logger.addHandler(file_handler)
 logger.addHandler(console_handler)
 
 
-bot = commands.Bot(command_prefix=config("DISCORD_PREFIX"))
+class Bot(commands.Bot):
+    def __init__(self):
+        super().__init__(command_prefix = config("DISCORD_PREFIX"), intents = discord.Intents.default())
+
+    async def on_ready(self):
+        print(f"We have logged in as {self.user}.")
 
 
-@bot.event
-async def on_ready():
-    print("Gainsworth is activated!")
+    # #METHOD 1: "Auto-Syncing" (sync only when you need to: modifying app commands' server-end info, like their name or description) - ratelimit for syncing is twice per minute
+    # async def setup_hook(self):
+    #     # init = ROOT_DIR/"cogs"/"__init__.py"
+    #     # cogs = [cog for cog in (ROOT_DIR / "cogs").glob("*.py") if cog != init]
+    #     # for cog in cogs:
+    #     #     print(f"Found cog: 'cog.{cog.name[:-3]}'")
+    #     #     await self.load_extension(f"gainsworth.cogs.{cog.name[:-3]}")
+    #     await self.tree.sync(guild = discord.Object(id=740310401001980036)) #make this line a comment, if you don't need to sync
+    #     print("Synced!")
+
+bot = Bot()
 
 
-@bot.command()
-async def ping(ctx):
-    await ctx.send("PONG")
+# bot = commands.Bot(command_prefix=config("DISCORD_PREFIX"), intents=intents)
+
+async def load_cogs(b):
+    init = ROOT_DIR/"cogs"/"__init__.py"
+    cogs = [cog for cog in (ROOT_DIR / "cogs").glob("*.py") if cog != init]
+    for cog in cogs:
+        print(f"Found cog: 'cog.{cog.name[:-3]}'")
+        await b.load_extension(f"gainsworth.cogs.{cog.name[:-3]}")
+
+# @bot.event
+# async def on_ready():
+#     # Register Cogs with bot
+#     commands = await bot.tree.sync(guild=discord.Object(id="740310401001980036"))
+#     # bot.tree.clear_commands(guild=discord.Object(id="740310401001980036"))
+#     print(await bot.tree.fetch_commands(guild=discord.Object(id="740310401001980036")))
+#     print(f"Gainsworth synced these commands: {commands}")
+#     print("Gainsworth is finished loading!")
 
 
-# Register Cogs with bot
-init = ROOT_DIR/"cogs"/"__init__.py"
-cogs = [cog for cog in (ROOT_DIR / "cogs").glob("*.py") if cog != init]
-for cog in cogs:
-    print(f"Found cog: 'cog.{cog.name[:-3]}'")
-    bot.load_extension(f"gainsworth.cogs.{cog.name[:-3]}")
 
-bot.run(config("DISCORD_BOT_KEY"))
+async def main():
+    async with bot:
+        await load_cogs(bot)
+        await bot.start(config("DISCORD_BOT_KEY"))
+
+asyncio.run(main())
+
+# bot.run(config("DISCORD_BOT_KEY"))
