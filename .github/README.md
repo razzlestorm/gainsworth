@@ -14,7 +14,7 @@ A discord bot to help you reach your fitness goals!
 
 ## How to Use
 
-* You can invite the existing bot to your server by clicking this **[invite link](https://discord.com/api/oauth2/authorize?client_id=910743103785271356&permissions=309237648448&scope=bot)**! If you'd like to run the bot and manage its data yourself, the Discord.py library has a helpful [guide](https://discordpy.readthedocs.io/en/stable/discord.html).
+* You can invite the existing bot to your server by clicking this **[invite link](https://discord.com/api/oauth2/authorize?client_id=910743103785271356&permissions=397284535296&scope=bot%20applications.commands)**! If you'd like to run the bot and manage its data yourself, the Discord.py library has a helpful [guide](https://discordpy.readthedocs.io/en/stable/discord.html).
 
 ## Maintainers
 

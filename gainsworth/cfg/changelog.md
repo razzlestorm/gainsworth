@@ -9,6 +9,7 @@ Released on October 6, 2022.
 
 * Bugfix the default value for /see_gains to be a line graph.
 
+
 ## 0.5.0
 
 Released on October 6, 2022.
