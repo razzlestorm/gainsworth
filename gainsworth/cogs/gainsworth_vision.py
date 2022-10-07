@@ -59,7 +59,7 @@ class GainsVision(commands.Cog):
         self, 
         interaction: discord.Interaction, 
         days: int=7, 
-        plot_type: app_commands.Choice[int]=1,
+        plot_type: app_commands.Choice[int]=app_commands.Choice[1],
         show: str=''
         ):
         """

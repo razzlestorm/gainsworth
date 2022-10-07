@@ -63,7 +63,7 @@ class Gainsworth(commands.Cog):
             for channel in guild.channels:
                 try:
                     await channel.send(text)
-                    await channel.send("If you'd like to stop receiving this changelog, please create an issue on my `g!github`") 
+                    await channel.send("If you'd like to stop receiving this changelog, please create an issue on my `/github`") 
                     print(f"changelog sent to {guild.name}: {channel.name}")
                     break
                 except Exception:
