@@ -215,7 +215,7 @@ class GainsMemory(commands.Cog):
         days="The number of days in the past you want to list your gains from, defaults to 7",
     )
     @app_commands.command()
-    async def list_gains(self, interaction: discord.Interaction, days: int=1) -> None:
+    async def list_gains(self, interaction: discord.Interaction, days: int=7) -> None:
         """
         List the Gains you've made in the past X days!
         Gainsworth will list out all the gains that you have recorded with the
