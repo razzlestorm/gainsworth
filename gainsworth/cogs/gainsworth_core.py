@@ -147,7 +147,7 @@ class Gainsworth(commands.Cog):
     @app_commands.command()
     async def hello(self, interaction: discord.Interaction) -> None:
         """Says hello"""
-        print("message received")
+        print("hello message received")
         if interaction.user == self.client.user:
             return
         member = interaction.user

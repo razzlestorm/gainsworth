@@ -42,24 +42,28 @@ class GainsMemory(commands.Cog):
         if interaction.user == self.client.user:
             return
         ses = Session()
-        user_id = interaction.user.id
-        registered_id = ses.query(User).filter(User.user_id == user_id).first()
-        if not registered_id:
-            registered_username = ses.query(User).filter(User.name == user_name).first()
-            if not registered_username:
-                name = User(name=user_name,
-                            user_id=user_id,
-                            date_created=datetime.utcnow(),
-                            last_active=datetime.utcnow())
-                ses.add(name)
-                ses.commit()
-            if not registered_username.user_id:
-                registered_username.user_id = user_id
-                ses.commit()
+        registered_id = None
+        try: 
+            user_id = interaction.user.id
             registered_id = ses.query(User).filter(User.user_id == user_id).first()
-        if registered_id.name != user_name:
-            registered_id.name = user_name
-            ses.commit()
+            if not registered_id:
+                registered_username = ses.query(User).filter(User.name == user_name).first()
+                if not registered_username:
+                    name = User(name=user_name,
+                                user_id=user_id,
+                                date_created=datetime.utcnow(),
+                                last_active=datetime.utcnow())
+                    ses.add(name)
+                    ses.commit()
+                if not registered_username.user_id:
+                    registered_username.user_id = user_id
+                    ses.commit()
+                registered_id = ses.query(User).filter(User.user_id == user_id).first()
+            if registered_id.name != user_name:
+                registered_id.name = user_name
+                ses.commit()
+        except Exception as e:
+            self.logger.error(f"failed user lookup or registration: {e}")
         # add logic for updating username checking registered_id AND registered_username == current_username
         return ses, registered_id
 

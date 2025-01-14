@@ -81,11 +81,14 @@ class GainsVision(commands.Cog):
         if memory is not None:
             ses, user = await memory._check_registered(interaction)
         if user:
-            exercises = pd.read_sql(ses.query(Exercise)
-                                    .filter(Exercise.user_id == user.id)
-                                    .statement, ses.bind)
-            exc_names = exercises.name.unique()
-            activity_filter = await self._parse_filter(exc_names, show)
+            try:
+                exercises = pd.read_sql(ses.query(Exercise)
+                                        .filter(Exercise.user_id == user.id)
+                                        .statement, ses.bind)
+                exc_names = exercises.name.unique()
+                activity_filter = await self._parse_filter(exc_names, show)
+            except Exception as e:
+                self.logger.error(f"Error creating exercise dataframe: {e}")
             if isinstance(days, str):
                 try:
                     days = int(days)
