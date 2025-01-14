@@ -8,7 +8,11 @@ from sqlalchemy.orm import sessionmaker
 
 
 if __name__ == "__main__":
-    engine = create_engine(config("DATABASE_URL"))
+    url = config("DATABASE_URL")
+    if url:
+        if "postgresql" not in url:
+            url = url.replace("postgres", "postgresql")
+    engine = create_engine(url)
     Session = sessionmaker(bind=engine)
 
     ses = Session()

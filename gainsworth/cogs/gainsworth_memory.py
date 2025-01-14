@@ -13,7 +13,11 @@ from sqlalchemy.orm import sessionmaker
 from gainsworth.db.models import Exercise, User
 
 
-engine = create_engine(config("DATABASE_URL"))
+url = config("DATABASE_URL")
+if url:
+    if "postgresql" not in url:
+        url = url.replace("postgres", "postgresql")
+engine = create_engine(url)
 Session = sessionmaker(bind=engine)
 
 
